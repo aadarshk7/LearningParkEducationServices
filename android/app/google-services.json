@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "45063901374",
+    "project_id": "learningparkeducation",
+    "storage_bucket": "learningparkeducation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:45063901374:android:0f28ae7de0916915d28eef",
+        "android_client_info": {
+          "package_name": "com.example.learningparkeducation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqDgbG5Nau5-8QhmxshXGcZ2R8HQZ-C00"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
