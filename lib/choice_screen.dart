@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:learningparkeducation/studentscreen/student_login.dart';
+import '../phoneotp.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
+import '../screens/teacher_login_screen.dart';
 
 class ChoicePage extends StatefulWidget {
   @override
@@ -8,6 +11,8 @@ class ChoicePage extends StatefulWidget {
 }
 
 class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
+  get screenHeight => MediaQuery.of(context).size.height;
+  get screenWidth => MediaQuery.of(context).size.width;
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -23,18 +28,21 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 47.0),
+                  // padding: const EdgeInsets.symmetric(horizontal: 47.0),
+                  padding: EdgeInsets.fromLTRB(
+                      0, screenHeight * 0.16, screenHeight * 0.01, 0),
                   child: Container(
-                    height: screenHeight * 0.49,
+                    height: screenHeight * 0.25,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/singlelogo.jpg'),
+                        image: AssetImage(
+                            'assets/images/singlelogocompressed.jpg'),
                         fit: BoxFit.contain,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.00),
+                SizedBox(height: screenHeight * 0.02),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 33.0),
                   child: ShaderMask(
@@ -55,13 +63,13 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.05),
+                Container(child: SizedBox(height: screenHeight * 0.09)),
                 _buildChoiceButton(
                   context: context,
                   label: "Teacher",
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => NextScreen(),
+                      builder: (BuildContext context) => TeacherLoginScreen(),
                     ));
                   },
                 ),
@@ -71,7 +79,7 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
                   label: "Student",
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => NextScreen(),
+                      builder: (BuildContext context) => StudentLogin(),
                     ));
                   },
                 ),
@@ -90,7 +98,10 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
     required VoidCallback onPressed,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 47.0),
+      padding:
+          // EdgeInsets.symmetric(vertical: screenWidth * 0.0),
+          // EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+          const EdgeInsets.symmetric(horizontal: 47.0),
       child: Container(
         height: 50,
         width: double.infinity,

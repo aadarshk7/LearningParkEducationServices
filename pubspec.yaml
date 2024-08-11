@@ -37,6 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.3.0
   firebase_analytics: ^11.2.1
+  provider: ^6.1.2
+  shared_preferences: ^2.3.1
+  firebase_auth: ^5.1.4
+  flutter_firebase_recaptcha: ^1.0.2
 
 dev_dependencies:
   flutter_test:

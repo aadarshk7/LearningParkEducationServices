@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/src/painting/text_style.dart" as ts;
+import 'package:flutter_firebase_recaptcha/firebase_recaptcha_verifier_modal.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
 
 // Code to connect with firebase databases
-Future main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -30,6 +31,15 @@ Future main() async {
 //     'appId': "1:939288879280:web:939288879280",
 //   };
 
+  const firebaseConfig = {
+    'apiKey': "AIzaSyCqDgbG5Nau5-8QhmxshXGcZ2R8HQZ-C00",
+    'authDomain': "learningparkeducation.firebaseapp.com",
+    'projectId': "learningparkeducation",
+    'storageBucket': "learningparkeducation.appspot.com",
+    'messagingSenderId': "939288879280",
+    'appId': "1:45063901374:web:45063901374",
+  };
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyCqDgbG5Nau5-8QhmxshXGcZ2R8HQZ-C00",
@@ -41,7 +51,14 @@ Future main() async {
       projectId: "learningparkeducation", // project id here
     ),
   );
-
+  FirebaseRecaptchaVerifierModal(
+    firebaseConfig: firebaseConfig,
+    onVerify: (token) => print('token: ' + token),
+    onLoad: () => print('onLoad'),
+    onError: () => print('onError'),
+    onFullChallenge: () => print('onFullChallenge'),
+    attemptInvisibleVerification: true,
+  );
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: SplashScreen(),
