@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import '../choice_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -14,29 +16,47 @@ class _SplashScreenState extends State<SplashScreen> {
       // Navigate to the next screen after the delay.
       // Replace 'NextScreen()' with your target screen.
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => NextScreen()),
+        MaterialPageRoute(builder: (_) => ChoicePage()),
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Container(
-          width: 300,
-          height: 300,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: AssetImage(
-                  'assets/images/logo.jpg'), // Make sure to add your image to the assets folder.
-              fit: BoxFit.contain,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Container(
+            width: 300,
+            height: 300,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/images/logo.jpg'), // Make sure to add your image to the assets folder.
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
       ),
+      // backgroundColor: Colors.white,
+      // body: Center(
+      //   child: Container(
+      //     width: 300,
+      //     height: 300,
+      //     decoration: const BoxDecoration(
+      //       shape: BoxShape.circle,
+      //       image: DecorationImage(
+      //         image: AssetImage(
+      //             'assets/images/logo.jpg'), // Make sure to add your image to the assets folder.
+      //         fit: BoxFit.contain,
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }
