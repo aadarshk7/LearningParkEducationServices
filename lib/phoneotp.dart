@@ -97,17 +97,42 @@ class _TeacherLoginScreen extends State<TeacherLoginScreen> {
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
             child: Column(
               children: <Widget>[
+                // Padding(
+                //   // padding: const EdgeInsets.symmetric(horizontal: 47.0),
+                //   padding: EdgeInsets.fromLTRB(
+                //       0, screenHeight * 0.16, screenHeight * 0.01, 0),
+                //   child: Container(
+                //     height: screenHeight * 0.29,
+                //     decoration: const BoxDecoration(
+                //       image: DecorationImage(
+                //         image: AssetImage(
+                //             'assets/images/singlelogocompressed.jpg'),
+                //         fit: BoxFit.contain,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
-                  // padding: const EdgeInsets.symmetric(horizontal: 47.0),
                   padding: EdgeInsets.fromLTRB(
                       0, screenHeight * 0.16, screenHeight * 0.01, 0),
                   child: Container(
-                    height: screenHeight * 0.25,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(
-                            'assets/images/singlelogocompressed.jpg'),
-                        fit: BoxFit.contain,
+                    height: screenHeight * 0.29,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.blue,
+                        width: 4.0, // Adjust the width as needed
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(
+                                'assets/images/singlelogocompressed.jpg'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
                   ),

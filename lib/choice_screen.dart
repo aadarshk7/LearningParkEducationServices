@@ -32,7 +32,7 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
                   padding: EdgeInsets.fromLTRB(
                       0, screenHeight * 0.16, screenHeight * 0.01, 0),
                   child: Container(
-                    height: screenHeight * 0.25,
+                    height: screenHeight * 0.29,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(
