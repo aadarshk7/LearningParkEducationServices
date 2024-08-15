@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -8,7 +7,7 @@ class TeacherHomePage extends StatefulWidget {
 }
 
 class _TeacherHomePageState extends State<TeacherHomePage> {
-  int currentPageIndex = 0; // Updated to match NavigationBarApp style
+  int currentPageIndex = 0;
   final DatabaseReference _questionsRef =
       FirebaseDatabase.instance.ref().child('questions');
 
@@ -27,7 +26,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   void _onItemTapped(int index) {
     setState(() {
-      currentPageIndex = index; // Updated to match NavigationBarApp style
+      currentPageIndex = index;
     });
   }
 
@@ -45,7 +44,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Teacher Dashboard'),
@@ -99,7 +97,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
             : _widgetOptions.elementAt(currentPageIndex),
       ),
       bottomNavigationBar: NavigationBar(
-        onDestinationSelected: _onItemTapped, // Updated to use NavigationBar
+        onDestinationSelected: _onItemTapped,
         selectedIndex: currentPageIndex,
         indicatorColor: Colors.amber,
         destinations: const <NavigationDestination>[
@@ -154,6 +152,16 @@ class _SubjectPageState extends State<SubjectPage> {
             _optionControllers.map((controller) => controller.text).toList(),
         'correctOption': _correctOption,
       });
+
+      // After adding the question, navigate to the AccountQuestion page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AccountQuestionPage(subjectName: widget.subjectName),
+        ),
+      );
+
       _questionController.clear();
       _optionControllers.forEach((controller) => controller.clear());
       setState(() {
@@ -224,6 +232,97 @@ class _SubjectPageState extends State<SubjectPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AccountQuestionPage extends StatelessWidget {
+  final String subjectName;
+
+  AccountQuestionPage({required this.subjectName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('$subjectName Questions'),
+      ),
+      body: StreamBuilder(
+        stream: FirebaseDatabase.instance
+            .ref()
+            .child('questions')
+            .child(subjectName)
+            .onValue,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+            return Center(child: Text('No questions found.'));
+          }
+
+          Object? questions = snapshot.data?.snapshot.value;
+          List<Question> questionList = (questions as Map<dynamic, dynamic>)
+              .entries
+              .map((entry) =>
+                  Question.fromMap(Map<String, dynamic>.from(entry.value)))
+              .toList();
+
+          return ListView.builder(
+            itemCount: questionList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(questionList[index].question),
+                subtitle: Text(
+                    'Correct Option: ${questionList[index].correctOption}'),
+              );
+            },
+          );
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Accounts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Finance',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Economics',
+          ),
+        ],
+        onTap: (index) {
+          String selectedSubject = subjectName[index];
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AccountQuestionPage(subjectName: selectedSubject),
+            ),
+          );
+        },
+        currentIndex: subjectName.indexOf(subjectName),
+      ),
+    );
+  }
+}
+
+class Question {
+  final String question;
+  final List<String> options;
+  final String correctOption;
+
+  Question(
+      {required this.question,
+      required this.options,
+      required this.correctOption});
+
+  factory Question.fromMap(Map<String, dynamic> map) {
+    return Question(
+      question: map['question'],
+      options: List<String>.from(map['options']),
+      correctOption: map['correctOption'],
     );
   }
 }
