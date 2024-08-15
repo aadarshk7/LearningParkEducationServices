@@ -4,7 +4,15 @@ import 'package:learningparkeducation/teacherscreen/userpage.dart';
 import '../studentscreen/studentssubject_list.dart';
 import 'subject_page.dart' as teacher;
 
+import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'userpage.dart';
+import 'subject_page.dart' as teacher;
+
 class TeacherHomePage extends StatelessWidget {
+  final DatabaseReference _subjectsRef =
+      FirebaseDatabase.instance.ref().child('subjects');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,36 +24,44 @@ class TeacherHomePage extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder(
-              stream:
-                  FirebaseFirestore.instance.collection('users').snapshots(),
+              stream: _subjectsRef.onValue,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                var users = snapshot.data!.docs;
-                return ListView.builder(
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: CircleAvatar(child: Icon(Icons.person)),
-                      title: Text(users[index]['name'],
-                          style: TextStyle(fontSize: 18)),
-                      trailing: Text('Marks: ${users[index]['marks']}',
-                          style: TextStyle(fontSize: 18)),
-                    );
-                  },
-                );
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData ||
+                    !snapshot.data!.snapshot.exists) {
+                  return Center(child: Text('No subjects available.'));
+                } else {
+                  Map<dynamic, dynamic> subjects =
+                      snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+                  List subjectNames = subjects.keys.toList();
+
+                  return ListView.builder(
+                    itemCount: subjectNames.length,
+                    itemBuilder: (context, index) {
+                      String subjectName = subjectNames[index];
+                      return ListTile(
+                        title: Text(
+                          subjectName,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        trailing: Icon(Icons.arrow_forward),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  teacher.SubjectPage(subjectName: subjectName),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
               },
-            ),
-          ),
-          SizedBox(height: 20),
-          Container(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildSubjectCard(context, 'Account', 'account_bg.png'),
-                _buildSubjectCard(context, 'Finance', 'finance_bg.png'),
-                _buildSubjectCard(context, 'Economics', 'economics_bg.png'),
-              ],
             ),
           ),
         ],
@@ -53,41 +69,59 @@ class TeacherHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  UserPage(subjectName: 'Finance')));
+          _addQuestion(context);
         },
       ),
     );
   }
 
-  Widget _buildSubjectCard(
-      BuildContext context, String subjectName, String imagePath) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => teacher.SubjectPage(subjectName: subjectName),
+  void _addQuestion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController _questionController = TextEditingController();
+        TextEditingController _subjectController = TextEditingController();
+
+        return AlertDialog(
+          title: Text('Add Question'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _subjectController,
+                decoration: InputDecoration(labelText: 'Subject'),
+              ),
+              TextField(
+                controller: _questionController,
+                decoration: InputDecoration(labelText: 'Question'),
+              ),
+            ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String subject = _subjectController.text.trim();
+                String question = _questionController.text.trim();
+
+                if (subject.isNotEmpty && question.isNotEmpty) {
+                  _subjectsRef
+                      .child(subject)
+                      .push()
+                      .set({'question': question});
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text('Add'),
+            ),
+          ],
         );
       },
-      child: Card(
-        margin: EdgeInsets.all(10),
-        child: Container(
-          width: 150,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/$imagePath'),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          alignment: Alignment.center,
-          child: Text(subjectName,
-              style: TextStyle(fontSize: 22, color: Colors.white)),
-        ),
-      ),
     );
   }
 }
