@@ -48,7 +48,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Teacher Dashboard',
+          'Welcome Teacher',
           style: GoogleFonts.openSans(),
         ),
       ),
@@ -102,7 +102,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             blurRadius: 6.0,
                             color: Colors.black26,
