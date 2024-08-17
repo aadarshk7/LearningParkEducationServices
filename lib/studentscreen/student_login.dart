@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:learningparkeducation/screens/signup_screen.dart';
 import '../phoneotp.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
 import '../screens/teacher_login_screen.dart';
@@ -90,11 +89,11 @@ class _StudentLoginState extends State<StudentLogin>
                             ),
                             Container(
                               padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
                                   ),
                               child: TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: "Email",
                                   prefixIcon: Icon(Icons.email),
                                 ),
@@ -162,200 +161,118 @@ class _StudentLoginState extends State<StudentLogin>
                           ],
                         ),
                       ),
-                      SizedBox(
+                     const SizedBox(
                         height: 18,
                       ),
-                      // Padding(
-                      //   // EdgeInsets.symmetric(vertical: screenHeight * 0.00),
-                      //   padding: const EdgeInsets.symmetric(horizontal: 47.0),
-                      //   child: Container(
-                      //     height: 50,
-                      //     decoration: BoxDecoration(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       gradient: const LinearGradient(colors: [
-                      //         Color.fromARGB(255, 33, 150, 243),
-                      //         Color.fromARGB(255, 3, 169, 244),
-                      //       ]),
-                      //     ),
-                      //     child: Center(
-                      //       child: TextButton(
-                      //         onPressed: () async {
-                      //           // Add validation checks here
-                      //           if (email == null ||
-                      //               email.isEmpty ||
-                      //               password == null ||
-                      //               password.isEmpty) {
-                      //             const snackdemo = SnackBar(
-                      //               content:
-                      //                   Text("Please enter email and password"),
-                      //               backgroundColor: Colors.red,
-                      //               elevation: 10,
-                      //               behavior: SnackBarBehavior.floating,
-                      //               margin: EdgeInsets.all(5),
-                      //             );
-                      //             ScaffoldMessenger.of(context)
-                      //                 .showSnackBar(snackdemo);
-                      //             return; // Return from the function if validation fails
-                      //           }
+                      Padding(
+                        // EdgeInsets.symmetric(vertical: screenHeight * 0.00),
+                        padding: const EdgeInsets.symmetric(horizontal: 47.0),
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            gradient: const LinearGradient(colors: [
+                              Color.fromARGB(255, 33, 150, 243),
+                              Color.fromARGB(255, 3, 169, 244),
+                            ]),
+                          ),
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () async {
+                                // Add validation checks here
+                                if (email == null ||
+                                    email.isEmpty ||
+                                    password == null ||
+                                    password.isEmpty) {
+                                  const snackdemo = SnackBar(
+                                    content:
+                                        Text("Please enter email and password"),
+                                    backgroundColor: Colors.red,
+                                    elevation: 10,
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: EdgeInsets.all(5),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackdemo);
+                                  return; // Return from the function if validation fails
+                                }
 
-                      //           String errorMessage = '';
-                      //           try {
-                      //             UserCredential userCredential =
-                      //                 await FirebaseAuth.instance
-                      //                     .signInWithEmailAndPassword(
-                      //               email: email,
-                      //               password: password,
-                      //             );
-                      //             // If the sign-in is successful, navigate to the homepage.
-                      //             // Navigator.pushNamed(context, '/user_page');
-
-                      //             Navigator.of(context).push(MaterialPageRoute(
-                      //                 builder: (BuildContext context) =>
-                      //                     TeacherHomePage()));
-                      //           } on FirebaseAuthException catch (e) {
-                      //             if (e.code == 'user-not-found') {
-                      //             } else if (e.code == 'wrong-password') {}
-
-                      //             const snackdemo = SnackBar(
-                      //               content:
-                      //                   Text("Email and Password may be wrong"),
-                      //               // Display the error message
-                      //               backgroundColor: Colors.red,
-                      //               elevation: 10,
-                      //               behavior: SnackBarBehavior.floating,
-                      //               margin: EdgeInsets.all(5),
-                      //             );
-                      //             ScaffoldMessenger.of(context)
-                      //                 .showSnackBar(snackdemo);
-                      //           } catch (e) {
-                      //             print('Exception caught: $e');
-                      //           }
-                      //         },
-                      //         child: const Text(
-                      //           "Login",
-                      //           style: TextStyle(
-                      //               color: Colors.white,
-                      //               fontWeight: FontWeight.bold,
-                      //               fontSize: 22),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                    
-
-     Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: const LinearGradient(colors: [
-                          Color.fromRGBO(42, 44, 80, 1),
-                          Color.fromRGBO(143, 148, 251, .6),
-                        ]),
-                      ),
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () async {
-                            // Add validation checks here
-                            if (email == null ||
-                                email.isEmpty ||
-                                password == null ||
-                                password.isEmpty) {
-                              const snackdemo = SnackBar(
-                                content:
-                                    Text("Please enter email and password"),
-                                backgroundColor: Colors.red,
-                                elevation: 10,
-                                behavior: SnackBarBehavior.floating,
-                                margin: EdgeInsets.all(5),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackdemo);
-                              return; // Return from the function if validation fails
-                            }
-
-                            String errorMessage = '';
-                            try {
-                              UserCredential userCredential = await FirebaseAuth
-                                  .instance
-                                  .signInWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
-                              // If the sign-in is successful, navigate to the homepage.
-                              // Navigator.pushNamed(context, '/splash_screen');
-
-                              Navigator.of(context).push(MaterialPageRoute(
+                                String errorMessage = '';
+                                try {
+                                  UserCredential userCredential =
+                                      await FirebaseAuth.instance
+                                          .signInWithEmailAndPassword(
+                                    email: email,
+                                    password: password,
+                                  );
+                                  // If the sign-in is successful, navigate to the homepage.
+                                //  Navigator.pushNamed(context, '/user_page');
+                                 Navigator.of(context).push(MaterialPageRoute(
                                 builder: (BuildContext context) =>
                                     TeacherHomePage(),
                               ));
-                            } on FirebaseAuthException catch (e) {
-                              if (e.code == 'user-not-found') {
-                              } else if (e.code == 'wrong-password') {}
+                                } on FirebaseAuthException catch (e) {
+                                  if (e.code == 'user-not-found') {
+                                  } else if (e.code == 'wrong-password') {}
 
-                              const snackdemo = SnackBar(
-                                content:
-                                    Text("Email and Password may be wrong"),
-                                // Display the error message
-                                backgroundColor: Colors.red,
-                                elevation: 10,
-                                behavior: SnackBarBehavior.floating,
-                                margin: EdgeInsets.all(5),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackdemo);
-                            } catch (e) {
-                              print('Exception caught: $e');
-                            }
-                          },
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22),
+                                  const snackdemo =  SnackBar(
+                                    content:
+                                        Text("Email and Password may be wrong"),
+                                    // Display the error message
+                                    backgroundColor: Colors.red,
+                                    elevation: 10,
+                                    behavior: SnackBarBehavior.floating,
+                                    margin: EdgeInsets.all(5),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackdemo);
+                                } catch (e) {
+                                  print('Exception caught: $e');
+                                }
+                              },
+                              child: const Text(
+                                "Login",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-
-
-
-
-
-
-
-
-
+                      const SizedBox(
+                        height: 23,
+                      ),
                       //Phone Page
-                      // GestureDetector(
-                      //   onTap: () {
-                      //     Navigator.push(
-                      //       context,
-                      //       //MaterialPageRoute(builder: (context) => PhonePage()),
-                      //       MaterialPageRoute(
-                      //           builder: (context) => NextScreen()),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            //MaterialPageRoute(builder: (context) => PhonePage()),
+                            MaterialPageRoute(
+                                builder: (context) => NextScreen()),
 
-                      //       //this
-                      //     );
-                      //   },
-                      //   // child: const Text(
-                      //   //       "Forgot Password?",
-                      //   //       style: TextStyle(
-                      //   //         color: Colors.blue,
-                      //   //         fontWeight: FontWeight.bold,
-                      //   //       ),
-                      //   //     ),
-                      //   child: const Text(
-                      //     "Phone OTP Verification",
-                      //     style: TextStyle(
-                      //         color: Colors.blue,
-                      //         fontWeight: FontWeight.bold,
-                      //         // color: Color.fromRGBO(143, 148, 251, 1),
-                      //         fontSize: 18),
-                      //   ),
-                      // ),
-                      SizedBox(
+                            //this
+                          );
+                        },
+                        // child: const Text(
+                        //       "Forgot Password?",
+                        //       style: TextStyle(
+                        //         color: Colors.blue,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        child: const Text(
+                          "Phone OTP Verification",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              // color: Color.fromRGBO(143, 148, 251, 1),
+                              fontSize: 18),
+                        ),
+                      ),
+                     const SizedBox(
                           height:
                               19 // Add some space between the two text widgets
                           ),
@@ -366,10 +283,10 @@ class _StudentLoginState extends State<StudentLogin>
                             // admin page shouldn't be there
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    SignUpPage()), // Replace with your SignupPage
+                                    SplashScreen()), // Replace with your SignupPage
                           );
                         },
-                        child: Text(
+                        child:const  Text(
                           "Create an Account",
                           style: TextStyle(
                               //color: Color.fromRGBO(143, 148, 251, 1),

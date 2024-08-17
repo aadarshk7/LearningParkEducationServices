@@ -22,39 +22,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Container(
-                height: 400,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
+              Padding(
+                  // padding: const EdgeInsets.symmetric(horizontal: 47.0),
+                  padding: EdgeInsets.fromLTRB(
+                      0, screenHeight * 0.16, screenHeight * 0.01, 0),
+                  child: Container(
+                    height: screenHeight * 0.25,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
                         image: AssetImage(
                             'assets/images/singlelogocompressed.jpg'),
-                        fit: BoxFit.contain)),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                        left: 145,
-                        top: 333,
-                        child: Container(
-                          margin: EdgeInsets.all(10),
-                          child: Center(
-                            child: Text(
-                              "Login",
-                              style: TextStyle(
-                                color: Colors.lightBlue.shade900,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        )),
-                  ],
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                 SizedBox(height: screenHeight * 0.02),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.blue, Colors.green],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ).createShader(bounds),
+                    child: const Text(
+                      "LearningPark Education Student Login",
+                      style: TextStyle(
+                        fontSize: 33,
+                        fontWeight: FontWeight.bold,
+                        color: Colors
+                            .white, // This color will be overridden by the gradient
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.all(30.0),
                 child: Column(
@@ -77,11 +87,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           Container(
                             padding: EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
                                 ),
                             child: TextField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: "Email",
                                 prefixIcon: Icon(Icons.email),
                               ),
@@ -152,13 +162,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 18,
                     ),
-                    Container(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 47),
+                   child: Container(
                       height: 50,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         gradient: const LinearGradient(colors: [
-                          Color.fromRGBO(143, 148, 251, 1),
-                          Color.fromRGBO(143, 148, 251, .6),
+                          Color.fromARGB(255, 33, 150, 243), // New start color (Blue)
+                       Color.fromARGB(255, 3, 169, 244), // New end color (Cyan)
                         ]),
                       ),
                       child: Center(
@@ -226,41 +238,39 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                    ),
                     const SizedBox(
                       height: 23,
                     ),
                     //Phone Page
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          //MaterialPageRoute(builder: (context) => PhonePage()),
-                          MaterialPageRoute(
-                              builder: (context) => TeacherHomePage()),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       //MaterialPageRoute(builder: (context) => PhonePage()),
+                    //       MaterialPageRoute(
+                    //           builder: (context) => TeacherHomePage()),
 
-                          //this
-                        );
-                      },
-                      // child: const Text(
-                      //       "Forgot Password?",
-                      //       style: TextStyle(
-                      //         color: Colors.blue,
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      //     ),
-                      child: Text(
-                        "Phone OTP Verification",
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            // color: Color.fromRGBO(143, 148, 251, 1),
-                            fontSize: 18),
-                      ),
-                    ),
-                    SizedBox(
-                        height:
-                            19 // Add some space between the two text widgets
-                        ),
+                    //       //this
+                    //     );
+                    //   },
+                    //   // child: const Text(
+                    //   //       "Forgot Password?",
+                    //   //       style: TextStyle(
+                    //   //         color: Colors.blue,
+                    //   //         fontWeight: FontWeight.bold,
+                    //   //       ),
+                    //   //     ),
+                    //   child: const Text(
+                    //     "Phone OTP Verification",
+                    //     style: TextStyle(
+                    //         color: Colors.blue,
+                    //         fontWeight: FontWeight.bold,
+                    //         // color: Color.fromRGBO(143, 148, 251, 1),
+                    //         fontSize: 18),
+                    //   ),
+                    // ),
+                
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -271,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SignUpPage()), // Replace with your SignupPage
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         "Create an Account",
                         style: TextStyle(
                             //color: Color.fromRGBO(143, 148, 251, 1),
@@ -285,6 +295,42 @@ class _LoginScreenState extends State<LoginScreen> {
               )
             ],
           ),
-        ));
+        )
+    );
+  }
+Widget _buildChoiceButton({
+    required BuildContext context,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 47.0),
+      child: Container(
+        height: 50,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromARGB(255, 33, 150, 243), // New start color (Blue)
+              Color.fromARGB(255, 3, 169, 244), // New end color (Cyan)
+            ],
+          ),
+        ),
+        child: Center(
+          child: TextButton(
+            onPressed: onPressed,
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white, // Changed text color to black
+                fontWeight: FontWeight.bold,
+                fontSize: 21,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
