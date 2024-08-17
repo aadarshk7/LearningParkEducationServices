@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:learningparkeducation/studentscreen/student_login.dart';
 import 'package:learningparkeducation/teacherscreen/teacherhomepage.dart';
+import 'package:learningparkeducation/teacherscreen2/subjectpage.dart';
+import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
 import '../studentscreen/studentssubject_list.dart';
 import '../phoneotp.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
@@ -81,7 +83,7 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
                   label: "Student",
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => StudentSubjectList(),
+                      builder: (BuildContext context) => TeacherHomePage(),
                     ));
                   },
                 ),
