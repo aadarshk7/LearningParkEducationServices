@@ -15,9 +15,10 @@ class StudentTestPage extends StatefulWidget {
 
 class _StudentTestPageState extends State<StudentTestPage> {
   List<Map<String, dynamic>> _questions = [];
-  Map<int, int> _selectedAnswers = {};
+  Map<int, int?> _selectedAnswers = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
+  int _attemptsLeft = 3; // Maximum 3 attempts
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
           return {
             'question': questionData['question'],
             'options': List<String>.from(questionData['options']),
-            'correctOption': questionData['correctOption'],
+            'correctOption': int.tryParse(questionData['correctOption'].toString()), // Ensure it's an int
           };
         }).toList();
         _isLoading = false;
@@ -48,36 +49,72 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Future<void> _checkIfSubmitted() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
+      _attemptsLeft = prefs.getInt('${widget.subjectName}_attemptsLeft') ?? 3;
       _isSubmitted = prefs.getBool('${widget.subjectName}_submitted') ?? false;
     });
   }
 
   Future<void> _submitAnswers() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('${widget.subjectName}_submitted', true);
 
     int score = 0;
     for (int i = 0; i < _questions.length; i++) {
-      if (_selectedAnswers[i] == _questions[i]['correctOption']) {
-        score += 10; // Assuming each question is worth 10 points
+      if (_selectedAnswers[i] != null && _selectedAnswers[i] == _questions[i]['correctOption']) {
+        score += 1; // Each question is worth 1 point
       }
     }
 
-    _showScoreDialog(score);
+    setState(() {
+      _attemptsLeft -= 1;
+      _isSubmitted = true;
+    });
+
+    await prefs.setInt('${widget.subjectName}_attemptsLeft', _attemptsLeft);
+    await prefs.setBool('${widget.subjectName}_submitted', _attemptsLeft <= 0);
+
+    _showResultDialog(score);
   }
 
-  void _showScoreDialog(int score) {
+  void _showResultDialog(int score) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('You are awesome!'),
-          content: Text('Score $score'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Score: $score/${_questions.length}'),
+              const SizedBox(height: 10),
+              ...List.generate(_questions.length, (index) {
+                final question = _questions[index];
+                final isCorrect = _selectedAnswers[index] == question['correctOption'];
+                return ListTile(
+                  title: Text(
+                    'Q${index + 1}: ${question['question']}',
+                    style: TextStyle(
+                      color: isCorrect ? Colors.green : Colors.red,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          'Your answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not answered"}'),
+                      Text('Correct answer: ${question['options'][question['correctOption']!]}'),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Go back to the previous screen
+                if (_attemptsLeft <= 0) {
+                  Navigator.of(context).pop(); // Go back to the previous screen if no attempts left
+                }
               },
               child: Text('OK'),
             ),
@@ -98,10 +135,10 @@ class _StudentTestPageState extends State<StudentTestPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : _isSubmitted
+          : (_isSubmitted && _attemptsLeft <= 0)
               ? Center(
                   child: Text(
-                    'You have already submitted the test for this subject.',
+                    'You have used all your attempts for this test.',
                     style: GoogleFonts.openSans(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
@@ -129,7 +166,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
                               onChanged: (value) {
                                 if (_selectedAnswers[index] == null) {
                                   setState(() {
-                                    _selectedAnswers[index] = value!;
+                                    _selectedAnswers[index] = value;
                                   });
                                 }
                               },
@@ -144,7 +181,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
                     );
                   },
                 ),
-      floatingActionButton: _isSubmitted || _selectedAnswers.length < _questions.length
+      floatingActionButton: (_isSubmitted && _attemptsLeft <= 0) || _selectedAnswers.length < _questions.length
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
