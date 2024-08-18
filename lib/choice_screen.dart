@@ -10,6 +10,7 @@ import '../studentscreen/studentssubject_list.dart';
 import '../phoneotp.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
 import '../screens/teacher_login_screen.dart';
+import 'studentscreen/student_homepage.dart';
 
 class ChoicePage extends StatefulWidget {
   @override
@@ -85,7 +86,7 @@ class _ChoicePageState extends State<ChoicePage> with TickerProviderStateMixin {
                   label: "Student",
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => StudentSubjectList(),
+                      builder: (BuildContext context) => StudentHomepage(),
                     ));
                   },
                 ),
