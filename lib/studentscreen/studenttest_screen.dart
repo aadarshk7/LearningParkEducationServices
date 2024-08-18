@@ -18,7 +18,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Map<int, int?> _selectedAnswers = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
-  int _attemptsLeft = 3; // Maximum 3 attempts
+  int _attemptsLeft = 20; // Maximum 3 attempts to solve questions
 
   @override
   void initState() {
@@ -38,7 +38,9 @@ class _StudentTestPageState extends State<StudentTestPage> {
           return {
             'question': questionData['question'],
             'options': List<String>.from(questionData['options']),
-            'correctOption': int.tryParse(questionData['correctOption'].toString()), // Ensure it's an int
+            'correctOption': questionData['correctOption'] != null
+                ? int.tryParse(questionData['correctOption'].toString())
+                : null, // Handle possible null values
           };
         }).toList();
         _isLoading = false;
@@ -49,7 +51,8 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Future<void> _checkIfSubmitted() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _attemptsLeft = prefs.getInt('${widget.subjectName}_attemptsLeft') ?? 3;
+      //for attempting to solve the questions for students
+      _attemptsLeft = prefs.getInt('${widget.subjectName}_attemptsLeft') ?? 20;
       _isSubmitted = prefs.getBool('${widget.subjectName}_submitted') ?? false;
     });
   }
@@ -59,18 +62,19 @@ class _StudentTestPageState extends State<StudentTestPage> {
 
     int score = 0;
     for (int i = 0; i < _questions.length; i++) {
-      if (_selectedAnswers[i] != null && _selectedAnswers[i] == _questions[i]['correctOption']) {
+      final correctOption = _questions[i]['correctOption'];
+      if (correctOption != null && _selectedAnswers[i] == correctOption) {
         score += 1; // Each question is worth 1 point
       }
     }
 
     setState(() {
       _attemptsLeft -= 1;
-      _isSubmitted = true;
+      _isSubmitted = _attemptsLeft <= 0;
     });
 
     await prefs.setInt('${widget.subjectName}_attemptsLeft', _attemptsLeft);
-    await prefs.setBool('${widget.subjectName}_submitted', _attemptsLeft <= 0);
+    await prefs.setBool('${widget.subjectName}_submitted', _isSubmitted);
 
     _showResultDialog(score);
   }
@@ -88,7 +92,8 @@ class _StudentTestPageState extends State<StudentTestPage> {
               const SizedBox(height: 10),
               ...List.generate(_questions.length, (index) {
                 final question = _questions[index];
-                final isCorrect = _selectedAnswers[index] == question['correctOption'];
+                final correctOption = question['correctOption'];
+                final isCorrect = _selectedAnswers[index] == correctOption;
                 return ListTile(
                   title: Text(
                     'Q${index + 1}: ${question['question']}',
@@ -101,7 +106,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
                     children: [
                       Text(
                           'Your answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not answered"}'),
-                      Text('Correct answer: ${question['options'][question['correctOption']!]}'),
+                      Text('Correct answer: ${correctOption != null ? question['options'][correctOption] : "Not available"}'),
                     ],
                   ),
                 );
