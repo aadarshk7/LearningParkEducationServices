@@ -19,7 +19,7 @@ class _GetUserState extends State<GetUser> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "User Details",
+          "Student Details",
           style: TextStyle(
             color: Colors.lightBlue.shade900,
             fontSize: 30,
@@ -28,26 +28,38 @@ class _GetUserState extends State<GetUser> {
       ),
 
       body: Column(children: [
+       const  Padding(padding: 
+        EdgeInsets.all(0.09)),
         Container(
-          height: 200,
-          width: 200,
-          decoration: BoxDecoration(
+          height: 133,
+          width: 100,
+          decoration: const BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(
-                    'assets/images/background.png',
+                    'assets/images/singlelogocompressed.jpg',
                   ),
                   fit: BoxFit.cover)),
         ),
-        Center(
-          child: Text(
-            "AmbulanceSewa User list",
-            style: TextStyle(
-              color: Colors.lightBlue.shade900,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.blue, Colors.green],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ).createShader(bounds),
+                    child: const Text(
+                      "LearningPark Education Students List",
+                      style: TextStyle(
+                        fontSize: 33,
+                        fontWeight: FontWeight.bold,
+                        color: Colors
+                            .white, // This color will be overridden by the gradient
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
             stream: _firestore.collection('users').snapshots(),

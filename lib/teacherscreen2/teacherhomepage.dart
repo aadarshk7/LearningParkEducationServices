@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:learningparkeducation/adminpage/adminuserpage.dart';
 import 'package:learningparkeducation/teacherscreen2/subjectpage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,19 +20,25 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
     'Economics',
   ];
 
-  static const List<String> _users = [
-    'User 1',
-    'User 2',
-    'User 3',
+  static const List<String> _widgetOptions = [
+    'Subjects',
+    'Marks',
+    'Users',
+    'Settings',
   ];
-
-  final PageController _pageController = PageController(initialPage: 0);
 
   void _onItemTapped(int index) {
     setState(() {
       currentPageIndex = index;
     });
-    _pageController.jumpToPage(index);
+
+    // Navigate to the Users screen if the index is 2
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => GetUser()),
+      );
+    }
   }
 
   void _openSubjectPage(BuildContext context, String subjectName) {
@@ -43,25 +50,6 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           questionsRef: _questionsRef.child(subjectName),
         ),
       ),
-    );
-  }
-
-  Widget _buildUserList() {
-    return ListView.builder(
-      itemCount: _users.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(
-            _users[index],
-            style: GoogleFonts.openSans(
-              fontSize: 20,
-            ),
-          ),
-          onTap: () {
-            // Handle user tap, e.g., open user details
-          },
-        );
-      },
     );
   }
 
@@ -113,51 +101,46 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           ],
         ),
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        children: [
-          ListView.builder(
-            itemCount: _subjectNames.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        blurRadius: 6.0,
-                        color: Colors.black26,
-                        offset: Offset(2.0, 2.0),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    title: Text(
-                      _subjectNames[index],
-                      style: GoogleFonts.openSans(
-                        fontSize: 20,
-                      ),
+      body: currentPageIndex == 0
+          ? ListView.builder(
+              itemCount: _subjectNames.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 6.0,
+                          color: Colors.black26,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ],
                     ),
-                    onTap: () {
-                      _openSubjectPage(context, _subjectNames[index]);
-                    },
+                    child: ListTile(
+                      title: Text(
+                        _subjectNames[index],
+                        style: GoogleFonts.openSans(
+                          fontSize: 20,
+                        ),
+                      ),
+                      onTap: () {
+                        _openSubjectPage(context, _subjectNames[index]);
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          const Center(child: Text('Marks')),
-          _buildUserList(),
-          const Center(child: Text('Settings')),
-        ],
-      ),
+                );
+              },
+            )
+          : Center(
+              child: Text(
+                _widgetOptions[currentPageIndex],
+                style: TextStyle(fontSize: 30),
+              ),
+            ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: _onItemTapped,
         selectedIndex: currentPageIndex,
