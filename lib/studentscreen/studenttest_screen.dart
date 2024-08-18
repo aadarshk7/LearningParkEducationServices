@@ -15,16 +15,13 @@ class StudentTestPage extends StatefulWidget {
 
 class _StudentTestPageState extends State<StudentTestPage> {
   List<Map<String, dynamic>> _questions = [];
-  Map<int, int?> _selectedAnswers = {};
+  Map<int, int> _selectedAnswers = {};
   bool _isLoading = true;
-  bool _isSubmitted = false;
-  int _attemptsLeft = 20; // Maximum 20 attempts to solve questions
 
   @override
   void initState() {
     super.initState();
     _loadQuestions();
-    _checkIfSubmitted();
   }
 
   Future<void> _loadQuestions() async {
@@ -38,9 +35,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
           return {
             'question': questionData['question'],
             'options': List<String>.from(questionData['options']),
-            'correctOption': questionData['correctOption'] != null
-                ? int.tryParse(questionData['correctOption'].toString())
-                : null, // Handle possible null values
+            'correctOption': questionData['correctOption'],
           };
         }).toList();
         _isLoading = false;
@@ -48,78 +43,51 @@ class _StudentTestPageState extends State<StudentTestPage> {
     }
   }
 
-  Future<void> _checkIfSubmitted() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      // Ensure attempts left is initialized to 20 if not set
-      _attemptsLeft = prefs.getInt('${widget.subjectName}_attemptsLeft') ?? 20;
-      _isSubmitted = prefs.getBool('${widget.subjectName}_submitted') ?? false;
-    });
-  }
-
   Future<void> _submitAnswers() async {
-    final prefs = await SharedPreferences.getInstance();
-
     int score = 0;
     for (int i = 0; i < _questions.length; i++) {
-      final correctOption = _questions[i]['correctOption'];
-      if (correctOption != null && _selectedAnswers[i] == correctOption) {
+      final correctOption = int.parse(_questions[i]['correctOption']);
+      if (_selectedAnswers[i] == correctOption) {
         score += 1; // Each question is worth 1 point
       }
     }
 
-    setState(() {
-      _attemptsLeft -= 1;
-      _isSubmitted = _attemptsLeft <= 0;
-    });
-
-    await prefs.setInt('${widget.subjectName}_attemptsLeft', _attemptsLeft);
-    await prefs.setBool('${widget.subjectName}_submitted', _isSubmitted);
-
-    _showResultDialog(score);
+    _showScoreDialog(score);
   }
 
-  void _showResultDialog(int score) {
+  void _showScoreDialog(int score) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('You are awesome!'),
+          title: Text('You have submitted the test!'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Score: $score/${_questions.length}'),
-              const SizedBox(height: 10),
-              ...List.generate(_questions.length, (index) {
-                final question = _questions[index];
-                final correctOption = question['correctOption'];
-                final isCorrect = _selectedAnswers[index] == correctOption;
+              Text('Your score is $score/${_questions.length}.'),
+              SizedBox(height: 16.0),
+              Text('Correct Answers:'),
+              ..._questions.asMap().entries.map((entry) {
+                int index = entry.key;
+                var question = entry.value;
                 return ListTile(
-                  title: Text(
-                    'Q${index + 1}: ${question['question']}',
-                    style: TextStyle(
-                      color: isCorrect ? Colors.green : Colors.red,
-                    ),
-                  ),
+                  title: Text('Q${index + 1}. ${question['question']}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          'Your answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not answered"}'),
-                      Text('Correct answer: ${correctOption != null ? question['options'][correctOption] : "Not available"}'),
+                      Text('Your Answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not Answered"}'),
+                      Text('Correct Answer: ${question['options'][int.parse(question['correctOption'])]}'),
                     ],
                   ),
                 );
-              }),
+              }).toList(),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                if (_attemptsLeft <= 0) {
-                  Navigator.of(context).pop(); // Go back to the previous screen if no attempts left
-                }
+                Navigator.of(context).pop(); // Go back to the previous screen
               },
               child: Text('OK'),
             ),
@@ -140,53 +108,45 @@ class _StudentTestPageState extends State<StudentTestPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : (_isSubmitted && _attemptsLeft <= 0)
-              ? Center(
-                  child: Text(
-                    'You have used all your attempts for this test.',
-                    style: GoogleFonts.openSans(fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _questions.length,
-                  itemBuilder: (context, index) {
-                    final question = _questions[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Q${index + 1}. ${question['question']}',
-                            style: GoogleFonts.openSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ...List.generate(question['options'].length, (i) {
-                            return RadioListTile<int>(
-                              value: i,
-                              groupValue: _selectedAnswers[index],
-                              onChanged: (value) {
-                                if (_selectedAnswers[index] == null) {
-                                  setState(() {
-                                    _selectedAnswers[index] = value;
-                                  });
-                                }
-                              },
-                              title: Text(
-                                question['options'][i],
-                                style: GoogleFonts.openSans(fontSize: 16),
-                              ),
-                            );
-                          }),
-                        ],
+          : ListView.builder(
+              itemCount: _questions.length,
+              itemBuilder: (context, index) {
+                final question = _questions[index];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Q${index + 1}. ${question['question']}',
+                        style: GoogleFonts.openSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  },
-                ),
-      floatingActionButton: (_isSubmitted && _attemptsLeft <= 0) || _selectedAnswers.length < _questions.length
+                      ...List.generate(question['options'].length, (i) {
+                        return RadioListTile<int>(
+                          value: i,
+                          groupValue: _selectedAnswers[index],
+                          onChanged: (value) {
+                            if (_selectedAnswers[index] == null) {
+                              setState(() {
+                                _selectedAnswers[index] = value!;
+                              });
+                            }
+                          },
+                          title: Text(
+                            question['options'][i],
+                            style: GoogleFonts.openSans(fontSize: 16),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                );
+              },
+            ),
+      floatingActionButton: _selectedAnswers.length < _questions.length
           ? null
           : FloatingActionButton.extended(
               onPressed: () {
