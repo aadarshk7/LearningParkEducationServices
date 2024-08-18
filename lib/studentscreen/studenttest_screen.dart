@@ -18,7 +18,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Map<int, int?> _selectedAnswers = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
-  int _attemptsLeft = 20; // Maximum 3 attempts to solve questions
+  int _attemptsLeft = 20; // Maximum 20 attempts to solve questions
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Future<void> _checkIfSubmitted() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      //for attempting to solve the questions for students
+      // Ensure attempts left is initialized to 20 if not set
       _attemptsLeft = prefs.getInt('${widget.subjectName}_attemptsLeft') ?? 20;
       _isSubmitted = prefs.getBool('${widget.subjectName}_submitted') ?? false;
     });
