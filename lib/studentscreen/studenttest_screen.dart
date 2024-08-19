@@ -185,16 +185,23 @@ class _StudentTestPageState extends State<StudentTestPage> {
                       );
                     }).toList(),
                     SizedBox(height: 20),
-                    if (_selectedAnswers.length == _questions.length)
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: _submitAnswers,
-                          child: Text('Submit'),
-                        ),
-                      ),
                   ],
                 ),
-      floatingActionButton: null, // Remove the floating action button
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_selectedAnswers.length == _questions.length)
+              IconButton(
+                icon: Icon(Icons.check_circle),
+                onPressed: _submitAnswers,
+                iconSize: 55,
+                color: Colors.green,
+                tooltip: 'Submit Answers',
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
