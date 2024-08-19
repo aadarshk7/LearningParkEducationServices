@@ -125,6 +125,27 @@ class _StudentTestPageState extends State<StudentTestPage> {
     );
   }
 
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.red,
+          title: Text('Error'),
+          content: Text('Please attempt all questions before submitting.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _restartTest() {
     setState(() {
       _selectedAnswers.clear();
@@ -185,16 +206,30 @@ class _StudentTestPageState extends State<StudentTestPage> {
                       );
                     }).toList(),
                     SizedBox(height: 20),
-                    if (_selectedAnswers.length == _questions.length)
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: _submitAnswers,
-                          child: Text('Submit'),
-                        ),
-                      ),
                   ],
                 ),
-      floatingActionButton: null, // Remove the floating action button
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.check_circle),
+              onPressed: () {
+                if (_selectedAnswers.length == _questions.length) {
+                  _submitAnswers();
+                } else {
+                  _showErrorDialog();
+                }
+              },
+              iconSize: 40,
+              color: Colors.green,
+              tooltip: 'Submit Answers',
+            ),
+            const Text('Submit',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
     );
   }
 }
