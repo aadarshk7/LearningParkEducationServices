@@ -17,8 +17,7 @@ void main() async {
             storageBucket: "learningparkeducation.appspot.com",
             messagingSenderId: "939288879280",
             appId: "1:45063901374:web:45063901374",
-            measurementId: "G-FREWCBF7Y1")
-            );
+            measurementId: "G-FREWCBF7Y1"));
   }
   ;
 
