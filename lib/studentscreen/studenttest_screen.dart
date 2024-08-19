@@ -18,6 +18,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
   Map<int, int> _selectedAnswers = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
+  bool _noQuestions = false;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
       final snapshot = await widget.questionsRef.get();
       final questionsMap = snapshot.value as Map<dynamic, dynamic>?;
 
-      if (questionsMap != null) {
+      if (questionsMap != null && questionsMap.isNotEmpty) {
         setState(() {
           _questions = questionsMap.entries.map((entry) {
             final questionData = entry.value as Map<dynamic, dynamic>;
@@ -46,12 +47,19 @@ class _StudentTestPageState extends State<StudentTestPage> {
             };
           }).toList();
           _isLoading = false;
+          _noQuestions = false;
         });
       } else {
-        print('Questions map is null');
+        setState(() {
+          _isLoading = false;
+          _noQuestions = true;
+        });
       }
     } catch (e) {
       print('Error loading questions: $e');
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -121,6 +129,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
     setState(() {
       _selectedAnswers.clear();
       _isLoading = true;
+      _noQuestions = false;
     });
     _loadQuestions(); // Reload the questions
   }
@@ -136,53 +145,55 @@ class _StudentTestPageState extends State<StudentTestPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(8.0),
-              children: [
-                ..._questions.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  var question = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Q${index + 1}. ${question['question']}',
-                          style: GoogleFonts.openSans(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        ...List.generate(question['options'].length, (i) {
-                          return RadioListTile<int>(
-                            value: i,
-                            groupValue: _selectedAnswers[index],
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedAnswers[index] = value!;
-                              });
-                            },
-                            title: Text(
-                              question['options'][i],
-                              style: GoogleFonts.openSans(fontSize: 16),
+          : _noQuestions
+              ? Center(child: Text('No questions available for this subject.'))
+              : ListView(
+                  padding: const EdgeInsets.all(8.0),
+                  children: [
+                    ..._questions.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      var question = entry.value;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Q${index + 1}. ${question['question']}',
+                              style: GoogleFonts.openSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          );
-                        }),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                SizedBox(height: 20),
-                if (_selectedAnswers.length == _questions.length)
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _submitAnswers,
-                      child: Text('Submit'),
-                    ),
-                  ),
-              ],
-            ),
+                            ...List.generate(question['options'].length, (i) {
+                              return RadioListTile<int>(
+                                value: i,
+                                groupValue: _selectedAnswers[index],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedAnswers[index] = value!;
+                                  });
+                                },
+                                title: Text(
+                                  question['options'][i],
+                                  style: GoogleFonts.openSans(fontSize: 16),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    SizedBox(height: 20),
+                    if (_selectedAnswers.length == _questions.length)
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _submitAnswers,
+                          child: Text('Submit'),
+                        ),
+                      ),
+                  ],
+                ),
       floatingActionButton: null, // Remove the floating action button
     );
   }
