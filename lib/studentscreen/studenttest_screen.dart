@@ -95,42 +95,34 @@ class _StudentTestPageState extends State<StudentTestPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('You have submitted the test!'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Your score is $score/${_questions.length}.'),
-              SizedBox(height: 16.0),
-              Text('Correct Answers:'),
-              ..._questions.asMap().entries.map((entry) {
-                int index = entry.key;
-                var question = entry.value;
-                return ListTile(
-                  title: Text('Q${index + 1}. ${question['question']}'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          'Your Answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not Answered"}'),
-                      Text(
-                          'Correct Answer: ${question['options'][int.parse(question['correctOption'].replaceAll(RegExp(r'[^0-9]'), '')) - 1]}'),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
+          content: Text('Your score is $score/${_questions.length}.'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the dialog
                 Navigator.of(context).pop(); // Go back to the previous screen
               },
               child: Text('OK'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _restartTest(); // Restart the test
+              },
+              child: Text('Restart'),
             ),
           ],
         );
       },
     );
+  }
+
+  void _restartTest() {
+    setState(() {
+      _selectedAnswers.clear();
+      _isLoading = true;
+    });
+    _loadQuestions(); // Reload the questions
   }
 
   @override
@@ -191,17 +183,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
                   ),
               ],
             ),
-      floatingActionButton: _selectedAnswers.length < _questions.length
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                if (_selectedAnswers.length == _questions.length) {
-                  _submitAnswers();
-                }
-              },
-              label: Text('Submit'),
-              icon: Icon(Icons.check),
-            ),
+      floatingActionButton: null, // Remove the floating action button
     );
   }
 }
