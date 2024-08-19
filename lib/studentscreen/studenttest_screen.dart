@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class StudentTestPage extends StatefulWidget {
@@ -16,6 +17,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
   List<Map<String, dynamic>> _questions = [];
   Map<int, int> _selectedAnswers = {};
   bool _isLoading = true;
+  bool _isSubmitted = false;
 
   @override
   void initState() {
@@ -32,14 +34,21 @@ class _StudentTestPageState extends State<StudentTestPage> {
         setState(() {
           _questions = questionsMap.entries.map((entry) {
             final questionData = entry.value as Map<dynamic, dynamic>;
+            print('Loaded question: ${questionData['question']}');
+            print('Correct Option from DB: ${questionData['correctOption']}');
+
             return {
               'question': questionData['question'],
               'options': List<String>.from(questionData['options']),
-              'correctOption': questionData['correctOption'].toString(),
+              'correctOption': questionData['correctOption'] != null
+                  ? questionData['correctOption'].toString()
+                  : null,
             };
           }).toList();
           _isLoading = false;
         });
+      } else {
+        print('Questions map is null');
       }
     } catch (e) {
       print('Error loading questions: $e');
@@ -51,15 +60,21 @@ class _StudentTestPageState extends State<StudentTestPage> {
       int score = 0;
       for (int i = 0; i < _questions.length; i++) {
         final selectedAnswer = _selectedAnswers[i];
-        final correctOption = int.tryParse(_questions[i]['correctOption'] ?? '');
+        final correctOption = _questions[i]['correctOption'];
 
-        print('Question ${i + 1}: Selected Answer: $selectedAnswer, Correct Answer: $correctOption');
+        // Extract the numeric part of the correct option
+        final correctOptionIndex =
+            int.parse(correctOption.replaceAll(RegExp(r'[^0-9]'), '')) - 1;
 
-        // Ensure both are valid integers and compare them
-        if (selectedAnswer != null && correctOption != null && selectedAnswer == correctOption) {
+        print(
+            'Question ${i + 1}: Selected Answer: $selectedAnswer, Correct Answer: $correctOptionIndex');
+
+        // Compare the selected answer index with the correct option index
+        if (selectedAnswer != null && selectedAnswer == correctOptionIndex) {
           score += 1; // Increment score if the answer is correct
         } else {
-          print('Answer mismatch or null: Selected: $selectedAnswer, Correct: $correctOption');
+          print(
+              'Answer mismatch or null: Selected: $selectedAnswer, Correct: $correctOptionIndex');
         }
       }
 
@@ -79,12 +94,35 @@ class _StudentTestPageState extends State<StudentTestPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Congratulations!'),
-          content: Text('You have scored $score/${_questions.length}.'),
+          title: Text('You have submitted the test!'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Your score is $score/${_questions.length}.'),
+              SizedBox(height: 16.0),
+              Text('Correct Answers:'),
+              ..._questions.asMap().entries.map((entry) {
+                int index = entry.key;
+                var question = entry.value;
+                return ListTile(
+                  title: Text('Q${index + 1}. ${question['question']}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          'Your Answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not Answered"}'),
+                      Text(
+                          'Correct Answer: ${question['options'][int.parse(question['correctOption'].replaceAll(RegExp(r'[^0-9]'), '')) - 1]}'),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 Navigator.of(context).pop(); // Go back to the previous screen
               },
               child: Text('OK'),
@@ -106,65 +144,63 @@ class _StudentTestPageState extends State<StudentTestPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
+          : ListView(
+              padding: const EdgeInsets.all(8.0),
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _questions.length,
-                    itemBuilder: (context, index) {
-                      final question = _questions[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Q${index + 1}. ${question['question']}',
-                              style: GoogleFonts.openSans(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            ...List.generate(question['options'].length, (i) {
-                              return RadioListTile<int>(
-                                value: i,
-                                groupValue: _selectedAnswers[index],
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedAnswers[index] = value!;
-                                  });
-                                },
-                                title: Text(
-                                  question['options'][i],
-                                  style: GoogleFonts.openSans(fontSize: 16),
-                                ),
-                              );
-                            }),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_selectedAnswers.length == _questions.length) {
-                        _submitAnswers(); // Submit the answers
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Please answer all the questions before submitting.'),
+                ..._questions.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  var question = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Q${index + 1}. ${question['question']}',
+                          style: GoogleFonts.openSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                        );
-                      }
-                    },
-                    child: Text('Submit'),
+                        ),
+                        ...List.generate(question['options'].length, (i) {
+                          return RadioListTile<int>(
+                            value: i,
+                            groupValue: _selectedAnswers[index],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedAnswers[index] = value!;
+                              });
+                            },
+                            title: Text(
+                              question['options'][i],
+                              style: GoogleFonts.openSans(fontSize: 16),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                SizedBox(height: 20),
+                if (_selectedAnswers.length == _questions.length)
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _submitAnswers,
+                      child: Text('Submit'),
+                    ),
                   ),
-                ),
               ],
+            ),
+      floatingActionButton: _selectedAnswers.length < _questions.length
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () {
+                if (_selectedAnswers.length == _questions.length) {
+                  _submitAnswers();
+                }
+              },
+              label: Text('Submit'),
+              icon: Icon(Icons.check),
             ),
     );
   }
