@@ -55,8 +55,11 @@ class _StudentTestPageState extends State<StudentTestPage> {
 
         print('Question ${i + 1}: Selected Answer: $selectedAnswer, Correct Answer: $correctOption');
 
+        // Ensure both are valid integers and compare them
         if (selectedAnswer != null && correctOption != null && selectedAnswer == correctOption) {
-          score += 1; // Each question is worth 1 point
+          score += 1; // Increment score if the answer is correct
+        } else {
+          print('Answer mismatch or null: Selected: $selectedAnswer, Correct: $correctOption');
         }
       }
 
@@ -151,7 +154,7 @@ class _StudentTestPageState extends State<StudentTestPage> {
                         _submitAnswers(); // Submit the answers
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                         const SnackBar(
+                          const SnackBar(
                             content: Text(
                                 'Please answer all the questions before submitting.'),
                           ),
