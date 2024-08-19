@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class StudentTestPage extends StatefulWidget {
@@ -25,34 +24,51 @@ class _StudentTestPageState extends State<StudentTestPage> {
   }
 
   Future<void> _loadQuestions() async {
-    final snapshot = await widget.questionsRef.get();
-    final questionsMap = snapshot.value as Map<dynamic, dynamic>?;
+    try {
+      final snapshot = await widget.questionsRef.get();
+      final questionsMap = snapshot.value as Map<dynamic, dynamic>?;
 
-    if (questionsMap != null) {
-      setState(() {
-        _questions = questionsMap.entries.map((entry) {
-          final questionData = entry.value as Map<dynamic, dynamic>;
-          return {
-            'question': questionData['question'],
-            'options': List<String>.from(questionData['options']),
-            'correctOption': questionData['correctOption'],
-          };
-        }).toList();
-        _isLoading = false;
-      });
+      if (questionsMap != null) {
+        setState(() {
+          _questions = questionsMap.entries.map((entry) {
+            final questionData = entry.value as Map<dynamic, dynamic>;
+            return {
+              'question': questionData['question'],
+              'options': List<String>.from(questionData['options']),
+              'correctOption': questionData['correctOption'].toString(),
+            };
+          }).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading questions: $e');
     }
   }
 
   Future<void> _submitAnswers() async {
-    int score = 0;
-    for (int i = 0; i < _questions.length; i++) {
-      final correctOption = int.parse(_questions[i]['correctOption']);
-      if (_selectedAnswers[i] == correctOption) {
-        score += 1; // Each question is worth 1 point
-      }
-    }
+    try {
+      int score = 0;
+      for (int i = 0; i < _questions.length; i++) {
+        final selectedAnswer = _selectedAnswers[i];
+        final correctOption = int.tryParse(_questions[i]['correctOption'] ?? '');
 
-    _showScoreDialog(score);
+        print('Question ${i + 1}: Selected Answer: $selectedAnswer, Correct Answer: $correctOption');
+
+        if (selectedAnswer != null && correctOption != null && selectedAnswer == correctOption) {
+          score += 1; // Each question is worth 1 point
+        }
+      }
+
+      _showScoreDialog(score);
+    } catch (e) {
+      print('Error during submission: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred while submitting the test.'),
+        ),
+      );
+    }
   }
 
   void _showScoreDialog(int score) {
@@ -60,33 +76,12 @@ class _StudentTestPageState extends State<StudentTestPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('You have submitted the test!'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Your score is $score/${_questions.length}.'),
-              SizedBox(height: 16.0),
-              Text('Correct Answers:'),
-              ..._questions.asMap().entries.map((entry) {
-                int index = entry.key;
-                var question = entry.value;
-                return ListTile(
-                  title: Text('Q${index + 1}. ${question['question']}'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Your Answer: ${_selectedAnswers[index] != null ? question['options'][_selectedAnswers[index]!] : "Not Answered"}'),
-                      Text('Correct Answer: ${question['options'][int.parse(question['correctOption'])]}'),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ],
-          ),
+          title: Text('Congratulations!'),
+          content: Text('You have scored $score/${_questions.length}.'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the dialog
                 Navigator.of(context).pop(); // Go back to the previous screen
               },
               child: Text('OK'),
@@ -108,54 +103,65 @@ class _StudentTestPageState extends State<StudentTestPage> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _questions.length,
-              itemBuilder: (context, index) {
-                final question = _questions[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Q${index + 1}. ${question['question']}',
-                        style: GoogleFonts.openSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _questions.length,
+                    itemBuilder: (context, index) {
+                      final question = _questions[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Q${index + 1}. ${question['question']}',
+                              style: GoogleFonts.openSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            ...List.generate(question['options'].length, (i) {
+                              return RadioListTile<int>(
+                                value: i,
+                                groupValue: _selectedAnswers[index],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedAnswers[index] = value!;
+                                  });
+                                },
+                                title: Text(
+                                  question['options'][i],
+                                  style: GoogleFonts.openSans(fontSize: 16),
+                                ),
+                              );
+                            }),
+                          ],
                         ),
-                      ),
-                      ...List.generate(question['options'].length, (i) {
-                        return RadioListTile<int>(
-                          value: i,
-                          groupValue: _selectedAnswers[index],
-                          onChanged: (value) {
-                            if (_selectedAnswers[index] == null) {
-                              setState(() {
-                                _selectedAnswers[index] = value!;
-                              });
-                            }
-                          },
-                          title: Text(
-                            question['options'][i],
-                            style: GoogleFonts.openSans(fontSize: 16),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_selectedAnswers.length == _questions.length) {
+                        _submitAnswers(); // Submit the answers
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                         const SnackBar(
+                            content: Text(
+                                'Please answer all the questions before submitting.'),
                           ),
                         );
-                      }),
-                    ],
+                      }
+                    },
+                    child: Text('Submit'),
                   ),
-                );
-              },
-            ),
-      floatingActionButton: _selectedAnswers.length < _questions.length
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                if (_selectedAnswers.length == _questions.length) {
-                  _submitAnswers();
-                }
-              },
-              label: Text('Submit'),
-              icon: Icon(Icons.check),
+                ),
+              ],
             ),
     );
   }
