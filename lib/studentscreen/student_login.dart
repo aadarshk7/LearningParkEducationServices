@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../phoneotp.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
 import '../screens/teacher_login_screen.dart';
 import '../teacherscreen2/teacherhomepage.dart';
@@ -161,7 +160,7 @@ class _StudentLoginState extends State<StudentLogin>
                           ],
                         ),
                       ),
-                     const SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
                       Padding(
@@ -206,16 +205,16 @@ class _StudentLoginState extends State<StudentLogin>
                                     password: password,
                                   );
                                   // If the sign-in is successful, navigate to the homepage.
-                                //  Navigator.pushNamed(context, '/user_page');
-                                 Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    TeacherHomePage(),
-                              ));
+                                  //  Navigator.pushNamed(context, '/user_page');
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        TeacherHomePage(),
+                                  ));
                                 } on FirebaseAuthException catch (e) {
                                   if (e.code == 'user-not-found') {
                                   } else if (e.code == 'wrong-password') {}
 
-                                  const snackdemo =  SnackBar(
+                                  const snackdemo = SnackBar(
                                     content:
                                         Text("Email and Password may be wrong"),
                                     // Display the error message
@@ -272,7 +271,7 @@ class _StudentLoginState extends State<StudentLogin>
                               fontSize: 18),
                         ),
                       ),
-                     const SizedBox(
+                      const SizedBox(
                           height:
                               19 // Add some space between the two text widgets
                           ),
@@ -286,7 +285,7 @@ class _StudentLoginState extends State<StudentLogin>
                                     SplashScreen()), // Replace with your SignupPage
                           );
                         },
-                        child:const  Text(
+                        child: const Text(
                           "Create an Account",
                           style: TextStyle(
                               //color: Color.fromRGBO(143, 148, 251, 1),
