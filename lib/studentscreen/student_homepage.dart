@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:learningparkeducation/adminpage/adminuserpage.dart';
 import 'package:learningparkeducation/teacherscreen2/subjectpage.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'studenttest_screen.dart';
 
 class StudentHomepage extends StatefulWidget {
@@ -15,8 +16,7 @@ class _StudentHomepageState extends State<StudentHomepage> {
   int currentPageIndex = 0;
   final DatabaseReference _questionsRef =
       FirebaseDatabase.instance.ref().child('questions');
-      // final DatabaseReference _questionsRef = FirebaseDatabase.instance.reference().child('questions');
-
+  String studentName = "Loading...";
 
   static const List<String> _subjectNames = [
     'Account',
@@ -31,12 +31,50 @@ class _StudentHomepageState extends State<StudentHomepage> {
     'Settings',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchStudentName();
+  }
+
+  void _fetchStudentName() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final email = user.email;
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          final doc = querySnapshot.docs.first;
+          setState(() {
+            studentName = doc.data()['name'] ?? 'No name found';
+          });
+        } else {
+          setState(() {
+            studentName = 'No name found';
+          });
+        }
+      } catch (e) {
+        print("Error fetching student name: $e");
+        setState(() {
+          studentName = 'Error loading name';
+        });
+      }
+    } else {
+      setState(() {
+        studentName = 'User not logged in';
+      });
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       currentPageIndex = index;
     });
 
-    // Navigate to the Users screen if the index is 2
     if (index == 2) {
       Navigator.push(
         context,
@@ -45,62 +83,24 @@ class _StudentHomepageState extends State<StudentHomepage> {
     }
   }
 
-  // void _openSubjectPage(BuildContext context, String subjectName) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => SubjectPage(
-  //         subjectName: subjectName,
-  //         questionsRef: _questionsRef.child(subjectName),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-
-// void _openSubjectPage(BuildContext context, String subjectName) {
-//   Navigator.push(
-//     context,
-//     MaterialPageRoute(
-//       builder: (context) => StudentTestPage(
-//         subjectName: subjectName,
-//         questionsRef: _questionsRef.child(subjectName),
-//       ),
-//     ),
-//   );
-// }
-
-
-
-// void _openSubjectPage(BuildContext context, String subjectName) {
-//   Navigator.push(
-//     context,
-//     MaterialPageRoute(
-//       builder: (context) => StudentTestPage(
-//         subjectName: subjectName,
-//       ),
-//     ),
-//   );
-// }
-
-void _openSubjectPage(BuildContext context, String subjectName) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => StudentTestPage(
-        subjectName: subjectName,
-        questionsRef: _questionsRef.child(subjectName), // Ensure _questionsRef is defined
+  void _openSubjectPage(BuildContext context, String subjectName) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentTestPage(
+          subjectName: subjectName,
+          questionsRef: _questionsRef.child(subjectName),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Welcome Student',
+          'Welcome, $studentName',
           style: GoogleFonts.openSans(),
         ),
       ),
