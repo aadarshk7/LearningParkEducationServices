@@ -250,7 +250,7 @@ class _StudentLoginState extends State<StudentLogin>
                             context,
                             //MaterialPageRoute(builder: (context) => PhonePage()),
                             MaterialPageRoute(
-                                builder: (context) => NextScreen()),
+                                builder: (context) => TeacherHomePage()),
 
                             //this
                           );
