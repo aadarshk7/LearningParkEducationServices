@@ -46,6 +46,9 @@ class _ProfilePageState extends State<ProfilePage> {
         _imageFile = File(pickedFile.path);
       });
 
+      // Ensure the user document exists before proceeding
+      await ensureUserDocumentExists();
+
       // Upload image to Firebase Storage
       await _uploadImageToFirebase();
     }
@@ -58,15 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
       final User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        // Check if the Firestore document exists
-        final userDoc =
-            FirebaseFirestore.instance.collection('users').doc(user.uid);
-        final docSnapshot = await userDoc.get();
-
-        if (!docSnapshot.exists) {
-          throw Exception('User document does not exist');
-        }
-
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('profile_images')
@@ -90,7 +84,10 @@ class _ProfilePageState extends State<ProfilePage> {
         });
 
         // Save the image URL to Firestore
-        await userDoc.update({'profile_image': downloadUrl});
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profile_image': downloadUrl});
 
         // Save image URL to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -113,14 +110,10 @@ class _ProfilePageState extends State<ProfilePage> {
       final User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        final userDoc =
-            FirebaseFirestore.instance.collection('users').doc(user.uid);
-
-        if (!(await userDoc.get()).exists) {
-          throw Exception('User document does not exist');
-        }
-
-        await userDoc.update({'age': _ageController.text});
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'age': _ageController.text});
 
         // Save age to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -138,15 +131,38 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Function to ensure user document exists
+  Future<void> ensureUserDocumentExists() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print('No user is currently signed in.');
+      return;
+    }
+
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    try {
+      final docSnapshot = await userRef.get();
+      if (!docSnapshot.exists) {
+        // Create a new document if it doesn't exist
+        await userRef.set({
+          'email': user.email,
+          // Add other fields as necessary
+        });
+        print('User document created.');
+      } else {
+        print('User document already exists.');
+      }
+    } catch (e) {
+      print('Error ensuring user document exists: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Profile Page',
-      //     style: GoogleFonts.openSans(),
-      //   ),
-      // ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -158,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? FileImage(_imageFile!)
                         : NetworkImage(imageUrl!) as ImageProvider,
                   )
-                : CircleAvatar(
+                : const CircleAvatar(
                     radius: 50,
                     child: Icon(Icons.person, size: 50),
                   ),
