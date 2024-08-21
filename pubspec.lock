@@ -328,6 +328,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.1"
+  google_generative_ai:
+    dependency: "direct main"
+    description:
+      name: google_generative_ai
+      sha256: eac2338da8f223af2930b83da11fc56dab5369653db172902031e4c54132a17a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.5"
   http:
     dependency: transitive
     description:
