@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:ambulancesewa/login_signup/phoneotp.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InsertUser extends StatefulWidget {
   const InsertUser({super.key});
@@ -15,7 +15,6 @@ class _SignUpPageState extends State<InsertUser> {
   final _firestore = FirebaseFirestore.instance;
   final auth = FirebaseAuth.instance;
 
-  // GoogleSignIn googleAuth = GoogleSignIn();
   late String email = '';
   late String name;
   late String password = '';
@@ -23,260 +22,238 @@ class _SignUpPageState extends State<InsertUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(
-            "New Users",
-            style: TextStyle(
-              color: Colors.lightBlue.shade900,
-              fontSize: 30,
-              // fontWeight: FontWeight.bold,
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        // backgroundColor: Colors.lightBlue.shade900,
+        title: Text(
+          "Students",
+          style: GoogleFonts.openSans(
+            fontSize: 25,
+            color: Colors.lightBlue.shade900,
           ),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 200,
-                  width: 200,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage(
-                            'assets/images/background.png',
-                          ),
-                          fit: BoxFit.cover)),
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: <Widget>[
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.blue, Colors.green],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ).createShader(bounds),
+                child: const Text(
+                  "Add new Student",
+                  style: TextStyle(
+                    fontSize: 33,
+                    fontWeight: FontWeight.bold,
+                    color: Colors
+                        .white, // This color will be overridden by the gradient
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                Center(
-                  child: Text(
-                    "Add new users",
-                    style: TextStyle(
-                      color: Colors.lightBlue.shade900,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(height: 20),
+              _buildInputField(
+                context,
+                label: "Name",
+                icon: Icons.person,
+                onChanged: (value) => setState(() => name = value),
+              ),
+              const SizedBox(height: 20),
+              _buildInputField(
+                context,
+                label: "Email",
+                icon: Icons.email,
+                onChanged: (value) => setState(() => email = value),
+              ),
+              const SizedBox(height: 20),
+              _buildPasswordInputField(
+                context,
+                label: "Password",
+                icon: Icons.lock,
+                obscureText: _obscureText,
+                onVisibilityToggle: () =>
+                    setState(() => _obscureText = !_obscureText),
+                onChanged: (value) => setState(() => password = value),
+              ),
+              const SizedBox(height: 35),
+              Padding(
+                // padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 55.0),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: const LinearGradient(colors: [
+                      Color.fromARGB(
+                          255, 33, 150, 243), // New start color (Blue)
+                      Color.fromARGB(255, 3, 169, 244), // New end color (Cyan)
+                    ]),
+                  ),
+                  child: Center(
+                    child: TextButton(
+                      onPressed: () {
+                        _addUser();
+                      },
+                      child: const Text(
+                        "Add",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(30.0),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Color.fromRGBO(143, 148, 251, .2),
-                                  blurRadius: 20.0,
-                                  offset: Offset(0, 10))
-                            ]),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(8.0),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(8.0),
-                              decoration: const BoxDecoration(
-                                  //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
-                                  ),
-                              child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: "Name",
-                                    prefixIcon: Icon(Icons.person),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      name = value;
-                                    });
-                                  }),
-                            ),
-                            Container(
-                                padding: EdgeInsets.all(8.0),
-                                decoration: const BoxDecoration(
-                                    //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
-                                    ),
-                                child: TextField(
-                                    decoration: const InputDecoration(
-                                      labelText: "Email",
-                                      prefixIcon: Icon(Icons.email),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        email = value;
-                                      });
-                                    })),
-                            Container(
-                              padding: EdgeInsets.all(8.0),
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  labelText: "Password",
-                                  prefixIcon: Icon(Icons.lock),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      // Based on passwordVisible state choose the icon
-                                      _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Theme.of(context).primaryColorDark,
-                                    ),
-                                    onPressed: () {
-                                      // Update the state i.e. toogle the state of passwordVisible variable
-                                      setState(() {
-                                        _obscureText = !_obscureText;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    password = value;
-                                  });
-                                },
-                                obscureText: _obscureText,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 22,
-                      ),
-                      Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(colors: [
-                            Color.fromRGBO(143, 148, 251, 1),
-                            Color.fromRGBO(143, 148, 251, .6),
-                          ]),
-                        ),
-                        child: Center(
-                          child: TextButton(
-                            child: Text(
-                              "Add",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              ),
-                            ),
-                            onPressed: () async {
-                              // Add validation checks here
-                              if (email == null ||
-                                  email.isEmpty ||
-                                  password == null ||
-                                  password.isEmpty) {
-                                const snackdemo = SnackBar(
-                                  content:
-                                      Text("Please enter email and password"),
-                                  backgroundColor: Colors.red,
-                                  elevation: 10,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(5),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackdemo);
-                                return; // Return from the function if validation fails
-                              }
-
-                              // Check if the email is valid
-                              RegExp regex = RegExp(
-                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                              );
-                              if (!regex.hasMatch(email)) {
-                                const snackdemo = SnackBar(
-                                  content: Text("Please enter a valid email"),
-                                  backgroundColor: Colors.red,
-                                  elevation: 10,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(5),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackdemo);
-                                return; // Return from the function if validation fails
-                              }
-
-                              // Check if the password is at least 8 characters long
-                              if (password.length < 8) {
-                                const snackdemo = SnackBar(
-                                  content: Text(
-                                      "Password must be at least 8 characters long"),
-                                  backgroundColor: Colors.red,
-                                  elevation: 10,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(5),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackdemo);
-                                return; // Return from the function if validation fails
-                              }
-
-                              var querySnapshot = await _firestore
-                                  .collection('users')
-                                  .where('email', isEqualTo: email)
-                                  .get();
-
-                              if (querySnapshot.docs.length >= 1) {
-                                const snackdemo = SnackBar(
-                                  content:
-                                      Text("The email address has been used."),
-                                  backgroundColor: Colors.red,
-                                  elevation: 10,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(5),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackdemo);
-                                return; // Return from the function if validation fails
-                              }
-
-                              FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword(
-                                      email: email, password: password)
-                                  .then((UserCredential userCredential) {
-                                User? user = userCredential.user;
-                                user?.updateDisplayName(name);
-                                _firestore.collection('users').add({
-                                  'name': name,
-                                  'email': email,
-                                  'pass': password,
-                                }).then((value) {
-                                  if (user != null) {
-                                    const snackdemo = SnackBar(
-                                      content: Text(
-                                        "New user has been successfully added",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                      backgroundColor: Colors.green,
-                                      elevation: 10,
-                                      behavior: SnackBarBehavior.floating,
-                                      margin: EdgeInsets.all(5),
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackdemo);
-                                    Navigator.pushNamed(
-                                        context, '/adminuserpage');
-                                  }
-                                }).catchError((e) {
-                                  print(e.toString());
-                                });
-                              }).catchError((e) {
-                                print(e.toString());
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+              ),
+              // ElevatedButton(
+              //   style: ElevatedButton.styleFrom(
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              //     backgroundColor: Colors.lightBlue.shade900,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     elevation: 5,
+              //   ),
+              //   onPressed: _addUser,
+              //   child: const Text(
+              //     "Add",
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontWeight: FontWeight.bold,
+              //       fontSize: 22,
+              //     ),
+              //   ),
+              // ),
+              //
+              //
+            ],
           ),
-        ));
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField(BuildContext context,
+      {required String label,
+      required IconData icon,
+      required ValueChanged<String> onChanged}) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.lightBlue.shade900),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.lightBlue.shade900),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.lightBlue.shade900),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildPasswordInputField(BuildContext context,
+      {required String label,
+      required IconData icon,
+      required bool obscureText,
+      required VoidCallback onVisibilityToggle,
+      required ValueChanged<String> onChanged}) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.lightBlue.shade900),
+        suffixIcon: IconButton(
+          icon: Icon(
+            obscureText ? Icons.visibility : Icons.visibility_off,
+            color: Colors.lightBlue.shade900,
+          ),
+          onPressed: onVisibilityToggle,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.lightBlue.shade900),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.lightBlue.shade900),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      obscureText: obscureText,
+      onChanged: onChanged,
+    );
+  }
+
+  void _addUser() async {
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar("Please enter email and password", Colors.red);
+      return;
+    }
+
+    RegExp regex = RegExp(
+      r'^[^@]+@[^@]+\.[^@]+',
+    );
+    if (!regex.hasMatch(email)) {
+      _showSnackBar("Please enter a valid email", Colors.red);
+      return;
+    }
+
+    if (password.length < 8) {
+      _showSnackBar("Password must be at least 8 characters long", Colors.red);
+      return;
+    }
+
+    var querySnapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      _showSnackBar("The email address has been used.", Colors.red);
+      return;
+    }
+
+    FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((UserCredential userCredential) {
+      User? user = userCredential.user;
+      user?.updateDisplayName(name);
+      _firestore.collection('users').add({
+        'name': name,
+        'email': email,
+        'pass': password,
+      }).then((value) {
+        if (user != null) {
+          _showSnackBar("New user has been successfully added", Colors.green);
+          Navigator.pushNamed(context, '/adminuserpage');
+        }
+      }).catchError((e) {
+        print(e.toString());
+      });
+    }).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  void _showSnackBar(String message, Color color) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+      backgroundColor: color,
+      elevation: 10,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(5),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
