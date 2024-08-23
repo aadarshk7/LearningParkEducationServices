@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserPage extends StatefulWidget {
   final String subjectName;
 
-  UserPage({required this.subjectName});
+  const UserPage({super.key, required this.subjectName});
 
   @override
   _UserPageState createState() => _UserPageState();
@@ -12,7 +12,7 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   int _currentQuestionIndex = 0;
-  List<String> _userAnswers = [];
+  final List<String> _userAnswers = [];
   int _marks = 0;
 
   void _submitExam() {
@@ -41,7 +41,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Take Exam', style: TextStyle(fontSize: 24)),
+        title: const Text('Take Exam', style: TextStyle(fontSize: 24)),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
@@ -50,7 +50,7 @@ class _UserPageState extends State<UserPage> {
             .collection('questions')
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData) return const CircularProgressIndicator();
           var questions = snapshot.data!.docs;
 
           if (_currentQuestionIndex < questions.length) {
@@ -61,7 +61,7 @@ class _UserPageState extends State<UserPage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
                     'Q${_currentQuestionIndex + 1}: ${questions[_currentQuestionIndex]['question']}',
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
                 ...List.generate(4, (index) {
@@ -93,7 +93,7 @@ class _UserPageState extends State<UserPage> {
                             _currentQuestionIndex--;
                           });
                         },
-                        child: Text('Previous'),
+                        child: const Text('Previous'),
                       ),
                     if (_currentQuestionIndex < questions.length - 1)
                       ElevatedButton(
@@ -102,19 +102,19 @@ class _UserPageState extends State<UserPage> {
                             _currentQuestionIndex++;
                           });
                         },
-                        child: Text('Next'),
+                        child: const Text('Next'),
                       ),
                     if (_currentQuestionIndex == questions.length - 1)
                       ElevatedButton(
                         onPressed: _submitExam,
-                        child: Text('Submit'),
+                        child: const Text('Submit'),
                       ),
                   ],
                 ),
               ],
             );
           } else {
-            return Center(child: Text('All questions answered!'));
+            return const Center(child: Text('All questions answered!'));
           }
         },
       ),
