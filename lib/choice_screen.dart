@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:learningparkeducation/screens/login_screen.dart';
-import 'package:learningparkeducation/studentscreen/student_homepage.dart';
+import 'package:learningparkeducation/screens/signup_screen.dart';
+import 'package:learningparkeducation/teacherscreen2/teacher_login_screen.dart';
 import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
 
 class ChoicePage extends StatelessWidget {
+  const ChoicePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -56,7 +59,7 @@ class ChoicePage extends StatelessWidget {
                 label: "Teacher",
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => TeacherHomePage(),
+                    builder: (context) => const TeacherLoginScreen(),
                   ));
                 },
               ),
@@ -66,7 +69,7 @@ class ChoicePage extends StatelessWidget {
                 label: "Student",
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
+                    builder: (context) => const LoginScreen(),
                   ));
                 },
               ),
