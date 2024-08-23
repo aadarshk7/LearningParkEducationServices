@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Add this line
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'admininsertuser.dart';
 
 class GetUser extends StatefulWidget {
+  const GetUser({super.key});
+
   @override
   _GetUserState createState() => _GetUserState();
 }
@@ -13,354 +14,348 @@ class GetUser extends StatefulWidget {
 class _GetUserState extends State<GetUser> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String searchQuery = '';
+
+  // Method to delete user from Firebase Authentication
+  Future<void> deleteUserFromFirebaseAuth(String email) async {
+    try {
+      var snapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        String uid = snapshot.docs.first.id;
+        await _auth.currentUser?.delete();
+        print("User with email $email deleted from Firebase Authentication.");
+      } else {
+        print("No user found with email: $email");
+      }
+    } catch (e) {
+      print('Error deleting user from Firebase Authentication: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Student Details",
-          style: TextStyle(
-            color: Colors.lightBlue.shade900,
-            fontSize: 30,
-          ),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isTablet = constraints.maxWidth > 600;
+        double titleFontSize = isTablet ? 40 : 25;
+        double subtitleFontSize = isTablet ? 20 : 18;
+        double cardPadding = isTablet ? 20 : 12;
+        double iconSize = isTablet ? 40 : 30;
+        double cardRadius = 15;
 
-      body: Column(children: [
-       const  Padding(padding: 
-        EdgeInsets.all(0.09)),
-        Container(
-          height: 133,
-          width: 100,
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/singlelogocompressed.jpg',
-                  ),
-                  fit: BoxFit.cover)),
-        ),
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Students",
+              style: GoogleFonts.openSans(
+                fontSize: titleFontSize,
+                color: Colors.lightBlue.shade900,
+              ),
+            ),
+          ),
+          body: Column(
+            children: [
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.blue, Colors.green],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ).createShader(bounds),
-                    child: const Text(
-                      "LearningPark Education Students List",
-                      style: TextStyle(
-                        fontSize: 33,
-                        fontWeight: FontWeight.bold,
-                        color: Colors
-                            .white, // This color will be overridden by the gradient
-                      ),
-                      textAlign: TextAlign.center,
+                padding: const EdgeInsets.all(8.0),
+                child: ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.blue, Colors.green],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    "LearningPark Education Students List",
+                    style: TextStyle(
+                      fontSize: isTablet ? 45 : 33,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore.collection('users').snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-              return ListView(
-                children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                  Map<String, dynamic> data =
-                      document.data() as Map<String, dynamic>;
-                  return ListTile(
-                    leading: Icon(Icons.person),
-                    title:
-                        data['phoneNumber'] != null && data['phoneNumber'] != ''
-                            ? Text('Phone: ${data['phoneNumber']}',
-                                style: TextStyle(fontSize: 20))
-                            : Text('Name: ${data['name']}',
-                                style: TextStyle(fontSize: 20)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (data['email'] != null &&
-                            data['email'] !=
-                                '') // Check if email exists and is not empty
-                          Text('Email: ${data['email']}',
-                              style: TextStyle(fontSize: 20)),
-                      ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      searchQuery = value.toLowerCase();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Search Students',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onLongPress: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          final _formKey = GlobalKey<FormState>();
-                          String newName = '';
-                          String newEmail = '';
+                    prefixIcon: Icon(Icons.search_sharp),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('users')
+                      .orderBy('name')
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
 
-                          return AlertDialog(
-                            title: Text('Options'),
-                            content: Form(
-                              key: _formKey,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  TextFormField(
-                                    decoration:
-                                        InputDecoration(labelText: 'New Name'),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter a name';
-                                      }
-                                      return null;
-                                    },
-                                    onSaved: (value) {
-                                      newName = value!;
-                                    },
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    var filteredDocs = snapshot.data!.docs.where((document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+                      String name = data['name']?.toLowerCase() ?? '';
+                      return name.contains(searchQuery);
+                    }).toList();
+
+                    return ListView(
+                      padding: EdgeInsets.all(cardPadding),
+                      children: filteredDocs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data() as Map<String, dynamic>;
+                        return Card(
+                          elevation: 8,
+                          shadowColor: Colors.black45,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(cardRadius),
+                          ),
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          child: Padding(
+                            padding: EdgeInsets.all(cardPadding),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.lightBlue,
+                                        Colors.blueAccent
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
                                   ),
-                                  TextFormField(
-                                    decoration:
-                                        InputDecoration(labelText: 'New Email'),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter an email';
-                                      }
-                                      return null;
-                                    },
-                                    onSaved: (value) {
-                                      newEmail = value!;
-                                    },
+                                  child: Icon(
+                                    Icons.person,
+                                    size: iconSize,
+                                    color: Colors.white,
                                   ),
-                                  OutlinedButton(
-                                    child: Text('Change User'),
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        _formKey.currentState!.save();
-                                        void updateUser(
-                                            String oldEmail,
-                                            String newName,
-                                            String newEmail) async {
-                                          var snapshot = await _firestore
-                                              .collection('users')
-                                              .where('email',
-                                                  isEqualTo: oldEmail)
-                                              .get();
-                                          snapshot.docs.forEach((document) {
-                                            document.reference.update({
-                                              'name': newName,
-                                              'email': newEmail,
-                                            });
-                                          });
-                                        }
-
-                                        updateUser(
-                                            data['email'], newName, newEmail);
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
+                                ),
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        data['name'] ?? 'No Name',
+                                        style: GoogleFonts.openSans(
+                                          fontSize: subtitleFontSize,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      if (data['email'] != null &&
+                                          data['email'] != '')
+                                        Text(
+                                          data['email'] ?? 'No Email',
+                                          style: GoogleFonts.openSans(
+                                            fontSize: subtitleFontSize - 2,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      if (data['phoneNumber'] != null &&
+                                          data['phoneNumber'] != '')
+                                        Text(
+                                          'Phone: ${data['phoneNumber']}',
+                                          style: GoogleFonts.openSans(
+                                            fontSize: subtitleFontSize - 2,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                    ],
                                   ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.more_vert),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        final formKey = GlobalKey<FormState>();
+                                        String newName = '';
+                                        String newEmail = '';
 
-                                  OutlinedButton(
-                                    child: Text('Delete User'),
-                                    onPressed: () async {
-                                      void deleteUser(String email) async {
-                                        try {
-                                          var snapshot = await _firestore
-                                              .collection('users')
-                                              .where('email', isEqualTo: email)
-                                              .get();
-                                          for (var document in snapshot.docs) {
-                                            // Delete the user document and wait for it to complete
-                                            await document.reference.delete();
+                                        return AlertDialog(
+                                          title: const Text('Options'),
+                                          content: Form(
+                                            key: formKey,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                TextFormField(
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          labelText:
+                                                              'New Name'),
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please enter a name';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onSaved: (value) {
+                                                    newName = value!;
+                                                  },
+                                                ),
+                                                TextFormField(
+                                                  decoration:
+                                                      const InputDecoration(
+                                                          labelText:
+                                                              'New Email'),
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please enter an email';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onSaved: (value) {
+                                                    newEmail = value!;
+                                                  },
+                                                ),
+                                                OutlinedButton(
+                                                  child:
+                                                      const Text('Change User'),
+                                                  onPressed: () {
+                                                    if (formKey.currentState!
+                                                        .validate()) {
+                                                      formKey.currentState!
+                                                          .save();
+                                                      void updateUser(
+                                                          String oldEmail,
+                                                          String newName,
+                                                          String
+                                                              newEmail) async {
+                                                        var snapshot =
+                                                            await _firestore
+                                                                .collection(
+                                                                    'users')
+                                                                .where('email',
+                                                                    isEqualTo:
+                                                                        oldEmail)
+                                                                .get();
+                                                        for (var document
+                                                            in snapshot.docs) {
+                                                          document.reference
+                                                              .update({
+                                                            'name': newName,
+                                                            'email': newEmail,
+                                                          });
+                                                        }
+                                                      }
 
-                                            // Assuming the phone number is stored in a 'phoneNumbers' collection
-                                            var phoneNumberSnapshot =
-                                                await _firestore
-                                                    .collection('phoneNumbers')
-                                                    .where('userEmail',
-                                                        isEqualTo: email)
-                                                    .get();
-                                            for (var phoneNumberDocument
-                                                in phoneNumberSnapshot.docs) {
-                                              // Delete the phone number document and wait for it to complete
-                                              await phoneNumberDocument
-                                                  .reference
-                                                  .delete();
-                                            }
-                                          }
-                                        } catch (e) {
-                                          print('Error deleting user: $e');
-                                        }
-                                      }
+                                                      updateUser(data['email'],
+                                                          newName, newEmail);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    }
+                                                  },
+                                                ),
+                                                OutlinedButton(
+                                                  child:
+                                                      const Text('Delete User'),
+                                                  onPressed: () async {
+                                                    void deleteUser(
+                                                        String email) async {
+                                                      try {
+                                                        var snapshot =
+                                                            await _firestore
+                                                                .collection(
+                                                                    'users')
+                                                                .where('email',
+                                                                    isEqualTo:
+                                                                        email)
+                                                                .get();
+                                                        if (snapshot
+                                                            .docs.isEmpty) {
+                                                          print(
+                                                              'No document found for email: $email');
+                                                          return;
+                                                        }
 
-                                      deleteUser(data['email']);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
+                                                        for (var document
+                                                            in snapshot.docs) {
+                                                          if (document.exists) {
+                                                            await document
+                                                                .reference
+                                                                .delete();
+                                                            print(
+                                                                "User document deleted successfully.");
 
-                                  OutlinedButton(
-                                    child: Text('Delete User Phone'),
-                                    onPressed: () async {
-                                      void deleteUserPhone() async {
-                                        try {
-                                          // Get the currently logged-in user
-                                          User? user =
-                                              FirebaseAuth.instance.currentUser;
+                                                            await deleteUserFromFirebaseAuth(
+                                                                email);
+                                                          }
+                                                        }
+                                                      } catch (e) {
+                                                        print(
+                                                            'Error deleting user: $e');
+                                                      }
+                                                    }
 
-                                          if (user != null) {
-                                            // Get a reference to the Firestore Database
-                                            final firestoreRef =
-                                                FirebaseFirestore.instance;
-
-                                            // Delete the user's document
-                                            await firestoreRef
-                                                .collection('users')
-                                                .doc(user.uid)
-                                                .delete();
-                                          } else {
-                                            print(
-                                                'No user is currently logged in');
-                                          }
-                                        } catch (e) {
-                                          print(
-                                              'Error deleting user phone: $e');
-                                        }
-                                      }
-
-                                      deleteUserPhone();
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // );
-                                  // return AlertDialog(
-                                  //   title: Text('Options'),
-                                  //   content: Form(
-                                  //     key: _formKey,
-                                  //     child: Column(
-                                  //       mainAxisSize: MainAxisSize.min,
-                                  //       children: <Widget>[
-                                  //         // ... Your existing TextFormField widgets and 'Change User' button ...
-                                  //
-                                  //         OutlinedButton(
-                                  //           child: Text('Delete User Email'),
-                                  //           onPressed: () async {
-                                  //             void deleteUserEmail(String email) async {
-                                  //               try {
-                                  //                 var snapshot = await _firestore
-                                  //                     .collection('users')
-                                  //                     .where('email', isEqualTo: email)
-                                  //                     .get();
-                                  //                 for (var document in snapshot.docs) {
-                                  //                   // Delete the user document and wait for it to complete
-                                  //                   await document.reference.delete();
-                                  //                 }
-                                  //               } catch (e) {
-                                  //                 print('Error deleting user email: $e');
-                                  //               }
-                                  //             }
-                                  //
-                                  //             deleteUserEmail(data['email']);
-                                  //             Navigator.of(context).pop();
-                                  //           },
-                                  //         ),
-
-                                  // OutlinedButton(
-                                  //   child: Text('Delete User Phone'),
-                                  //   onPressed: () async {
-                                  //     void deleteUserPhone(String userId) async {
-                                  //       try {
-                                  //         // Get a reference to the Realtime Database
-                                  //         final dbRef = FirebaseDatabase.instance.reference();
-                                  //
-                                  //         // Assuming the phone number is stored under 'users/userId/phoneNumber'
-                                  //         await dbRef.child('users').child(userId).child('phoneNumber').remove();
-                                  //       } catch (e) {
-                                  //         print('Error deleting user phone: $e');
-                                  //       }
-                                  //     }
-                                  //
-                                  //     deleteUserPhone(data['phoneNumber']); // Replace with the actual userId
-                                  //     Navigator.of(context).pop();
-                                  //   },
-                                  // ),
-                                ],
-                              ),
+                                                    deleteUser(data['email']);
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                }).toList(),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => InsertUser()),
               );
             },
+            label: Text(
+              "Add new students",
+              style: GoogleFonts.openSans(
+                fontSize: isTablet ? 30 : 25,
+                color: Colors.lightBlue.shade900,
+              ),
+            ),
           ),
-        ),
-      ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => InsertUser()),
-          );
-        },
-        child: Icon(Icons.add),
-      ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     showDialog(
-      //       context: context,
-      //       builder: (BuildContext context) {
-      //         TextEditingController _emailController = TextEditingController();
-      //         return AlertDialog(
-      //           title: Text('Delete User'),
-      //           content: Column(
-      //             children: <Widget>[
-      //               const Text('Enter the email of the user you want to delete.'),
-      //               TextField(
-      //                 controller: _emailController,
-      //                 decoration: InputDecoration(labelText: 'Email'),
-      //               ),
-      //             ],
-      //           ),
-      //           actions: <Widget>[
-      //             OutlinedButton(
-      //               child: Text('Cancel'),
-      //               onPressed: () {
-      //                 Navigator.of(context).pop();
-      //               },
-      //             ),
-      //             OutlinedButton(
-      //               child: Text('Delete'),
-      //               onPressed: () {
-      //                 void deleteUser(String email) async {
-      //                   var snapshot = await _firestore.collection('users').where('email', isEqualTo: email).get();
-      //                   snapshot.docs.forEach((document) {
-      //                     document.reference.delete();
-      //                   });
-      //                 }
-      //
-      //                 // Implement your method to delete the user from the database
-      //                 deleteUser(_emailController.text);
-      //                 Navigator.of(context).pop();
-      //               },
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     );
-      //   },
-      //   child: Icon(Icons.delete),
-      // ),
+        );
+      },
     );
   }
 }
