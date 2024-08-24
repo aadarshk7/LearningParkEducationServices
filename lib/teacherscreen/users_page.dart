@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class UsersPage extends StatelessWidget {
+  const UsersPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Users'),
+        title: const Text('Users'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Subjects Page Content'),
       ),
     );
