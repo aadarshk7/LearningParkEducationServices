@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProfilePage extends StatefulWidget {
   final String studentName;
 
-  ProfilePage({required this.studentName});
+  const ProfilePage({super.key, required this.studentName});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -94,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
         await prefs.setString('profile_image', downloadUrl);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile picture updated successfully!')),
+          const SnackBar(content: Text('Profile picture updated successfully!')),
         );
       }
     } catch (e) {
@@ -120,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
         await prefs.setString('age', _ageController.text);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Age updated successfully!')),
+          const SnackBar(content: Text('Age updated successfully!')),
         );
       }
     } catch (e) {
@@ -178,31 +178,31 @@ class _ProfilePageState extends State<ProfilePage> {
                     radius: 50,
                     child: Icon(Icons.person, size: 50),
                   ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _pickImage,
-              child: Text('Pick Image'),
+              child: const Text('Pick Image'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               widget.studentName,
               style: GoogleFonts.openSans(fontSize: 20),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Age: ${_ageController.text}',
               style: GoogleFonts.openSans(fontSize: 16),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _ageController,
-              decoration: InputDecoration(labelText: 'Enter your age'),
+              decoration: const InputDecoration(labelText: 'Enter your age'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveAge,
-              child: Text('Save Age'),
+              child: const Text('Save Age'),
             ),
           ],
         ),
