@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MarksPage extends StatefulWidget {
+  const MarksPage({super.key});
+
   @override
   _MarksPageState createState() => _MarksPageState();
 }
@@ -88,12 +90,16 @@ class _MarksPageState extends State<MarksPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Marks',
-          style: GoogleFonts.openSans(),
+          "Marks",
+          style: GoogleFonts.openSans(
+            fontSize: 25,
+            color: Colors.lightBlue.shade900,
+            // fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: _marksData.isEmpty
-          ? Center(child: Text('No marks available'))
+          ? const Center(child: Text('No marks available'))
           : ListView.builder(
               itemCount: _marksData.length,
               itemBuilder: (context, index) {
@@ -104,7 +110,7 @@ class _MarksPageState extends State<MarksPage> {
                   future: _fetchStudentName(email),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     final studentName = snapshot.data ?? 'No name found';
@@ -135,7 +141,7 @@ class _MarksPageState extends State<MarksPage> {
                             style: GoogleFonts.openSans(fontSize: 16),
                           ),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _deleteMark(email),
                           ),
                         ),
