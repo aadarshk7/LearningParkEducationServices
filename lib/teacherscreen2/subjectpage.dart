@@ -6,7 +6,7 @@ class SubjectPage extends StatefulWidget {
   final String subjectName;
   final DatabaseReference questionsRef;
 
-  SubjectPage({required this.subjectName, required this.questionsRef});
+  const SubjectPage({super.key, required this.subjectName, required this.questionsRef});
 
   @override
   _SubjectPageState createState() => _SubjectPageState();
@@ -29,7 +29,9 @@ class _SubjectPageState extends State<SubjectPage> {
       });
 
       _questionController.clear();
-      _optionControllers.forEach((controller) => controller.clear());
+      for (var controller in _optionControllers) {
+        controller.clear();
+      }
       setState(() {
         _correctOption = null;
       });
@@ -64,7 +66,7 @@ class _SubjectPageState extends State<SubjectPage> {
               children: [
                 TextFormField(
                   controller: _questionController,
-                  decoration: InputDecoration(labelText: 'Question'),
+                  decoration: const InputDecoration(labelText: 'Question'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a question';
@@ -72,7 +74,7 @@ class _SubjectPageState extends State<SubjectPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ...List.generate(4, (index) {
                   return Column(
                     children: [
@@ -88,7 +90,7 @@ class _SubjectPageState extends State<SubjectPage> {
                         },
                       ),
                       RadioListTile<String>(
-                        title: Text('Correct'),
+                        title: const Text('Correct'),
                         value: 'Option ${index + 1}',
                         groupValue: _correctOption,
                         onChanged: (value) {
@@ -100,17 +102,17 @@ class _SubjectPageState extends State<SubjectPage> {
                     ],
                   );
                 }),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     ElevatedButton(
                       onPressed: _addQuestion,
-                      child: Text('Add Question'),
+                      child: const Text('Add Question'),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: _viewQuestions,
-                      child: Text('View Questions'),
+                      child: const Text('View Questions'),
                     ),
                   ],
                 ),
