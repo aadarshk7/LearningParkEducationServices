@@ -52,7 +52,7 @@ class ChatProvider with ChangeNotifier {
       botResponseText = botResponseText?.replaceAllMapped(urlPattern, (match) {
         String url = match[0]!;
         if (!url.startsWith('http')) {
-          url = 'https://' + url;
+          url = 'https://$url';
         }
         return url;
       });
