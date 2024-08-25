@@ -32,10 +32,7 @@ class QuotesPage extends StatelessWidget {
           'To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.',
       'author': 'Ralph Waldo Emerson'
     },
-    {
-      'quote': 'You only live once, but if you do it right, once is enough.',
-      'author': 'Mae West'
-    },
+    {'quote': 'Strive for excellence.', 'author': 'Aadarsh Kunwar'},
     {
       'quote': 'The purpose of our lives is to be happy.',
       'author': 'Dalai Lama'
@@ -95,6 +92,8 @@ class QuotesPage extends StatelessWidget {
     }
   ];
 
+  QuotesPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +105,7 @@ class QuotesPage extends StatelessWidget {
         backgroundColor: Colors.teal,
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         itemCount: quotes.length,
         itemBuilder: (context, index) {
           final quote = quotes[index]['quote']!;
@@ -114,9 +113,9 @@ class QuotesPage extends StatelessWidget {
 
           return Card(
             elevation: 5,
-            margin: EdgeInsets.symmetric(vertical: 8.0),
+            margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListTile(
-              contentPadding: EdgeInsets.all(16.0),
+              contentPadding: const EdgeInsets.all(16.0),
               title: Text(
                 quote,
                 style: GoogleFonts.openSans(
