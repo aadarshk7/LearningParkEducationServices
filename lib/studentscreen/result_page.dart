@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ResultPage extends StatelessWidget {
   final int score;
   final List<Map<String, dynamic>> questions;
   final Map<int, int> selectedAnswers;
 
-  ResultPage({
+  const ResultPage({super.key, 
     required this.score,
     required this.questions,
     required this.selectedAnswers,
@@ -17,11 +15,11 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Test Results'),
+        title: const Text('Test Results'),
         automaticallyImplyLeading: false, // Disable the default back button
         actions: [
           IconButton(
-            icon: Icon(Icons.home),
+            icon: const Icon(Icons.home),
             onPressed: () {
               // Navigate back to StudentHomepage
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -34,10 +32,10 @@ class ResultPage extends StatelessWidget {
         children: [
           Text(
             'Your score is $score/${questions.length}.',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16.0),
-          Text('Correct Answers:', style: TextStyle(fontSize: 18)),
+          const SizedBox(height: 16.0),
+          const Text('Correct Answers:', style: TextStyle(fontSize: 18)),
           ...questions.asMap().entries.map((entry) {
             int index = entry.key;
             var question = entry.value;
@@ -53,15 +51,15 @@ class ResultPage extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
-          SizedBox(height: 20),
+          }),
+          const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
               onPressed: () {
                 // Navigate back to StudentHomepage
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              child: Text('Back to Homepage'),
+              child: const Text('Back to Homepage'),
             ),
           ),
         ],
