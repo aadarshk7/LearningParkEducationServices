@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
 
+import '../teacherscreen2/teacher_login_screen.dart';
+import 'login_screen.dart';
+
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -54,7 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           left: 145,
                           top: 333,
                           child: Container(
-                            margin: EdgeInsets.all(10),
+                            margin: const EdgeInsets.all(10),
                             child: Center(
                               child: Text(
                                 "SignUp",
@@ -70,15 +75,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(30.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: Column(
                     children: <Widget>[
                       Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                   color: Color.fromRGBO(143, 148, 251, .2),
                                   blurRadius: 20.0,
@@ -87,15 +92,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Column(
                           children: <Widget>[
                             Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                             ),
                             Container(
-                              padding: EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: const BoxDecoration(
                                   //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
                                   ),
                               child: TextField(
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: "Name",
                                     prefixIcon: Icon(Icons.person),
                                   ),
@@ -106,12 +111,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                   }),
                             ),
                             Container(
-                                padding: EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: const BoxDecoration(
                                     //border: Border(bottom: BorderSide(color: Colors.grey[400]))!
                                     ),
                                 child: TextField(
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       labelText: "Email",
                                       prefixIcon: Icon(Icons.email),
                                     ),
@@ -121,11 +126,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                       });
                                     })),
                             Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: TextField(
                                 decoration: InputDecoration(
                                   labelText: "Password",
-                                  prefixIcon: Icon(Icons.lock),
+                                  prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       // Based on passwordVisible state choose the icon
@@ -153,14 +158,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 22,
                       ),
                       Container(
                         height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(colors: [
+                          gradient: const LinearGradient(colors: [
                             Color.fromRGBO(143, 148, 251, 1),
                             Color.fromRGBO(143, 148, 251, .6),
                           ]),
@@ -176,10 +181,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             onPressed: () async {
                               // Add validation checks here
-                              if (email == null ||
-                                  email.isEmpty ||
-                                  password == null ||
-                                  password.isEmpty) {
+                              if (email.isEmpty || password.isEmpty) {
                                 const snackdemo = SnackBar(
                                   content:
                                       Text("Please enter email and password"),
@@ -222,7 +224,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 return; // Return from the function if validation fails
                               }
                               var querySnapshot = await _firestore
-                                  .collection('users')
+                                  .collection('teachers')
                                   .where('email', isEqualTo: email)
                                   .get();
                               if (querySnapshot.docs.length >= 2) {
@@ -245,7 +247,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   .then((UserCredential userCredential) {
                                 User? user = userCredential.user;
                                 user?.updateDisplayName(name);
-                                _firestore.collection('users').add({
+                                _firestore.collection('teachers').add({
                                   'name': name,
                                   'email': email,
                                   'pass': password,
@@ -272,7 +274,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => TeacherHomePage()),
+                                builder: (context) =>
+                                    const TeacherLoginScreen()),
                           );
                         },
                         child: const Text(
