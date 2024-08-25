@@ -1,11 +1,11 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learningparkeducation/screens/splash_screen.dart';
-import '../screens/teacher_login_screen.dart';
 import '../teacherscreen2/teacherhomepage.dart';
 
 class StudentLogin extends StatefulWidget {
+  const StudentLogin({super.key});
+
   @override
   State<StudentLogin> createState() => _StudentLoginState();
 }
@@ -67,11 +67,11 @@ class _StudentLoginState extends State<StudentLogin>
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(30.0),
+                  padding: const EdgeInsets.all(30.0),
                   child: Column(
                     children: <Widget>[
                       Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
@@ -84,7 +84,7 @@ class _StudentLoginState extends State<StudentLogin>
                         child: Column(
                           children: <Widget>[
                             Container(
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                             ),
                             Container(
                               padding: const EdgeInsets.all(8.0),
@@ -105,11 +105,11 @@ class _StudentLoginState extends State<StudentLogin>
                             ),
                             Container(
                               height: 77,
-                              padding: EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8.0),
                               child: TextField(
                                 decoration: InputDecoration(
                                   labelText: "Password",
-                                  prefixIcon: Icon(Icons.lock),
+                                  prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       // Based on passwordVisible state choose the icon
@@ -179,10 +179,7 @@ class _StudentLoginState extends State<StudentLogin>
                             child: TextButton(
                               onPressed: () async {
                                 // Add validation checks here
-                                if (email == null ||
-                                    email.isEmpty ||
-                                    password == null ||
-                                    password.isEmpty) {
+                                if (email.isEmpty || password.isEmpty) {
                                   const snackdemo = SnackBar(
                                     content:
                                         Text("Please enter email and password"),
@@ -208,7 +205,7 @@ class _StudentLoginState extends State<StudentLogin>
                                   //  Navigator.pushNamed(context, '/user_page');
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        TeacherHomePage(),
+                                        const TeacherHomePage(),
                                   ));
                                 } on FirebaseAuthException catch (e) {
                                   if (e.code == 'user-not-found') {
@@ -250,7 +247,7 @@ class _StudentLoginState extends State<StudentLogin>
                             context,
                             //MaterialPageRoute(builder: (context) => PhonePage()),
                             MaterialPageRoute(
-                                builder: (context) => TeacherHomePage()),
+                                builder: (context) => const TeacherHomePage()),
 
                             //this
                           );
