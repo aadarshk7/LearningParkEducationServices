@@ -30,7 +30,7 @@ Future<void> signInAndVerify(
 
     // Proceed with navigation if user exists
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => StudentHomepage()));
+        builder: (BuildContext context) => const StudentHomepage()));
   } on FirebaseAuthException catch (e) {
     // Handle authentication exceptions
     print('Firebase Auth Error: ${e.message}');
@@ -40,6 +40,6 @@ Future<void> signInAndVerify(
     // Handle other exceptions
     print('Error: $e');
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('An unexpected error occurred')));
+        .showSnackBar(const SnackBar(content: Text('An unexpected error occurred')));
   }
 }
