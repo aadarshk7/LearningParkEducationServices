@@ -6,6 +6,8 @@ import 'chat_provider.dart';
 class ChatScreen extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
 
+  ChatScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
@@ -30,15 +32,15 @@ class ChatScreen extends StatelessWidget {
                       isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     padding:
-                        EdgeInsets.all(16), // Increased padding for better UI
-                    margin: EdgeInsets.all(10),
+                        const EdgeInsets.all(16), // Increased padding for better UI
+                    margin: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isUser
                           ? Colors.teal[200]
                           : Colors.teal[50], // Updated colors
                       borderRadius:
                           BorderRadius.circular(12), // Slightly rounded corners
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           blurRadius: 6.0,
                           color: Colors.black26,
@@ -72,12 +74,12 @@ class ChatScreen extends StatelessWidget {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
+                  icon: const Icon(Icons.send),
                   color: Colors.teal, // Icon color for consistency
                   onPressed: () {
                     if (_controller.text.isNotEmpty) {
