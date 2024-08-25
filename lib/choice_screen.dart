@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:learningparkeducation/screens/login_screen.dart';
-import 'package:learningparkeducation/screens/signup_screen.dart';
 import 'package:learningparkeducation/teacherscreen2/teacher_login_screen.dart';
-import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
 
 class ChoicePage extends StatelessWidget {
   const ChoicePage({super.key});
@@ -46,8 +44,7 @@ class ChoicePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 33,
                       fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // This color will be overridden by the gradient
+                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -58,9 +55,10 @@ class ChoicePage extends StatelessWidget {
                 context: context,
                 label: "Teacher",
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const TeacherLoginScreen(),
-                  ));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const TeacherLoginScreen()),
+                  );
                 },
               ),
               SizedBox(height: screenHeight * 0.03),
@@ -68,9 +66,10 @@ class ChoicePage extends StatelessWidget {
                 context: context,
                 label: "Student",
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ));
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
                 },
               ),
               SizedBox(height: screenHeight * 0.03),
@@ -95,8 +94,8 @@ class ChoicePage extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           gradient: const LinearGradient(
             colors: [
-              Color.fromARGB(255, 33, 150, 243), // New start color (Blue)
-              Color.fromARGB(255, 3, 169, 244), // New end color (Cyan)
+              Color.fromARGB(255, 33, 150, 243),
+              Color.fromARGB(255, 3, 169, 244),
             ],
           ),
         ),
@@ -106,7 +105,7 @@ class ChoicePage extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                color: Colors.white, // Changed text color to black
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 21,
               ),
