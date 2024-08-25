@@ -1,12 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
-import 'package:learningparkeducation/screens/signup_screen.dart';
 import 'package:learningparkeducation/studentscreen/student_homepage.dart';
-import 'package:learningparkeducation/studentscreen/subjectlistpage.dart';
 import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../choice_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -21,6 +23,83 @@ class _LoginScreenState extends State<LoginScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
+    // Future<void> _login(BuildContext context) async {
+    //   if (email.isEmpty || password.isEmpty) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text("Please enter email and password"),
+    //         backgroundColor: Colors.red,
+    //         elevation: 10,
+    //         behavior: SnackBarBehavior.floating,
+    //         margin: EdgeInsets.all(5),
+    //       ),
+    //     );
+    //     return;
+    //   }
+    //
+    //   try {
+    //     UserCredential userCredential = await FirebaseAuth.instance
+    //         .signInWithEmailAndPassword(email: email, password: password);
+    //
+    //     SharedPreferences prefs = await SharedPreferences.getInstance();
+    //     await prefs.setBool('isLoggedIn', true);
+    //     await prefs.setString('userEmail', email);
+    //
+    //     // Fetch user type from Firestore
+    //     String userType = await _getUserType(email); // Fetch user type
+    //
+    //     // Debugging output
+    //     print('User type: $userType');
+    //
+    //     // Navigate based on user type
+    //     if (userType == 'users') {
+    //       Navigator.of(context).pushReplacement(
+    //         MaterialPageRoute(builder: (context) => const StudentHomepage()),
+    //       );
+    //     } else if (userType == 'teachers') {
+    //       Navigator.of(context).pushReplacement(
+    //         MaterialPageRoute(builder: (context) => const TeacherHomePage()),
+    //       );
+    //     } else {
+    //       Navigator.of(context).pushReplacement(
+    //         MaterialPageRoute(builder: (context) => const StudentHomepage()),
+    //       );
+    //     }
+    //   } on FirebaseAuthException catch (e) {
+    //     String errorMessage;
+    //     if (e.code == 'user-not-found') {
+    //       errorMessage = 'No user found for that email.';
+    //     } else if (e.code == 'wrong-password') {
+    //       errorMessage = 'Wrong password provided for that user.';
+    //     } else if (e.code == 'user-disabled') {
+    //       errorMessage = 'Your account has been deleted or disabled.';
+    //     } else {
+    //       errorMessage = 'Email and Password may be wrong.';
+    //     }
+    //
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(
+    //         content: Text(errorMessage),
+    //         backgroundColor: Colors.red,
+    //         elevation: 10,
+    //         behavior: SnackBarBehavior.floating,
+    //         margin: const EdgeInsets.all(5),
+    //       ),
+    //     );
+    //   } catch (e) {
+    //     print('Exception caught: $e');
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('An error occurred. Please try again.'),
+    //         backgroundColor: Colors.red,
+    //         elevation: 10,
+    //         behavior: SnackBarBehavior.floating,
+    //         margin: EdgeInsets.all(5),
+    //       ),
+    //     );
+    //   }
+    // }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -28,9 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.fromLTRB(
-                  0, screenHeight * 0.16, screenHeight * 0.01, 0),
+                  0, screenHeight * 0.11, screenHeight * 0.01, 0),
               child: Container(
-                height: screenHeight * 0.25,
+                height: screenHeight * 0.22,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/images/singlelogocompressed.jpg'),
@@ -49,9 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   end: Alignment.centerRight,
                 ).createShader(bounds),
                 child: const Text(
-                  "LearningPark Education Student Login",
+                  "LearningPark Education Login",
                   style: TextStyle(
-                    fontSize: 33,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -60,11 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(30.0),
+              padding: const EdgeInsets.all(30.0),
               child: Column(
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -78,9 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Column(
                       children: <Widget>[
-                        Container(padding: EdgeInsets.all(8.0)),
+                        Container(padding: const EdgeInsets.all(8.0)),
                         Container(
-                          padding: EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: TextField(
                             decoration: const InputDecoration(
                               labelText: "Email",
@@ -95,11 +174,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Container(
                           height: 77,
-                          padding: EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: TextField(
                             decoration: InputDecoration(
                               labelText: "Password",
-                              prefixIcon: Icon(Icons.lock),
+                              prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureText
@@ -163,23 +242,42 @@ class _LoginScreenState extends State<LoginScreen> {
                                 password: password,
                               );
 
-                              // Check if the user is deleted or inactive
-                              final user = FirebaseAuth.instance.currentUser;
-                              if (user == null) {
-                                throw FirebaseAuthException(
-                                  code: 'user-disabled',
-                                  message:
-                                      'User account has been deleted or disabled.',
+                              // Save login state using SharedPreferences
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setBool('isLoggedIn', true);
+                              await prefs.setString('userEmail', email);
+
+                              // Fetch user type from Firestore
+                              String userType =
+                                  await _getUserType(email); // Fetch user type
+
+                              // Debugging output
+                              print('User type: $userType');
+
+                              // Navigate based on user type
+                              if (userType == 'users') {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const StudentHomepage(),
+                                  ),
+                                );
+                              } else if (userType == 'teachers') {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TeacherHomePage(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const StudentHomepage(),
+                                  ),
                                 );
                               }
-
-                              // If the sign-in is successful, navigate to the homepage
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      StudentHomepage(),
-                                ),
-                              );
                             } on FirebaseAuthException catch (e) {
                               String errorMessage;
                               if (e.code == 'user-not-found') {
@@ -208,8 +306,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               print('Exception caught: $e');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content:
-                                      Text('Email and Password may be wrong.'),
+                                  content: Text(
+                                      'An error occurred. Please try again.'),
                                   backgroundColor: Colors.red,
                                   elevation: 10,
                                   behavior: SnackBarBehavior.floating,
@@ -218,6 +316,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             }
                           },
+                          ////
+                          /////////
+                          /////
                           child: const Text(
                             "Login",
                             style: TextStyle(
@@ -230,25 +331,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 23),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StudentHomepage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "Create an Account",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             )
@@ -258,39 +340,26 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildChoiceButton({
-    required BuildContext context,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 47.0),
-      child: Container(
-        height: 50,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 33, 150, 243),
-              Color.fromARGB(255, 3, 169, 244),
-            ],
-          ),
-        ),
-        child: Center(
-          child: TextButton(
-            onPressed: onPressed,
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 21,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+  Future<String> _getUserType(String email) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var userDocument = querySnapshot.docs.first;
+        print('User document found: ${userDocument.data()}'); // Debug output
+        return userDocument['userType'] ??
+            'users'; // Adjust field name if necessary
+      } else {
+        print('No matching user document found for $email'); // Debug output
+        return 'users';
+      }
+    } catch (e) {
+      print('Error fetching user type: $e');
+      return 'users'; // Default to 'users' in case of an error
+    }
   }
 }
