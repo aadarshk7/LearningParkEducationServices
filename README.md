@@ -1,20 +1,16 @@
-<<<<<<< HEAD
-# learningparkeducation
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# LearningParkEducationServices
->>>>>>> 2282ebf33142e418bf6e380b882a9d8e442d7f4a
+# MCQ App 
+MCQ (Multiple Choice Questions) application using Flutter, designed for students to take quizzes on various subjects. <br>
+<b>Technologies Used:</b> Flutter, Dart, Provider, Shared Preferences, Firebase 
+Secure login for students and teachers using Firebase Auth
+<h2>Student HomePage</h2>
+<p> <img src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_homepage.jpg" height = 444 width=222/> </p>
+<h2>Student mcq question</h2></h2>
+<p> <img src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_subject.jpg" height = 444 width=222/> </p>
+<!-- <h2>Language Translator</h2>
+<p> <img src="https://github.com/aadarshk7/meroaichat/blob/master/assets/images/languagetranslator.jpg" height = 444 width=222/> </p> 
+<h2> AI Chat using gemini API</h2>
+<p> <img src="https://github.com/aadarshk7/meroaichat/blob/master/assets/images/AIchat.jpg" height = 444 width=222/> </p>
+<h2> QR Code Reader</h2>
+<p> <img src="https://github.com/aadarshk7/meroaichat/blob/master/assets/images/QR_Reader.jpg" height = 444 width=222/> </p>
+<h2> Nodepad </h2>
+<p> <img src="https://github.com/aadarshk7/meroaichat/blob/master/assets/images/NotePad.jpg" height = 444 width=222/> </p> -->
