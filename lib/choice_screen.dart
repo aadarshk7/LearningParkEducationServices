@@ -116,3 +116,4 @@ class ChoicePage extends StatelessWidget {
     );
   }
 }
+// Compare this snippet from lib/teacherscreen2/teacher_login_screen.dart:
