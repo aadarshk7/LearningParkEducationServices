@@ -8,7 +8,10 @@ class StudentTestPage extends StatefulWidget {
   final DatabaseReference questionsRef;
 
   const StudentTestPage(
-      {super.key, required this.subjectName, required this.questionsRef});
+      {super.key,
+      required this.subjectName,
+      required this.questionsRef,
+      required String subject});
 
   @override
   _StudentTestPageState createState() => _StudentTestPageState();
