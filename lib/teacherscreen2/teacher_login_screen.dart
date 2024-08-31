@@ -1,19 +1,33 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore import
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learningparkeducation/teacherscreen2/teacherhomepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TeacherLoginScreen extends StatefulWidget {
   const TeacherLoginScreen({super.key});
 
   @override
-  State<TeacherLoginScreen> createState() => _LoginScreenState();
+  State<TeacherLoginScreen> createState() => _TeacherLoginScreenState();
 }
 
-class _LoginScreenState extends State<TeacherLoginScreen> {
+class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
   bool _obscureText = true;
   late String email = '';
   late String password = '';
+
+  Future<void> _login(BuildContext context) async {
+    // Assuming you have logic for user authentication
+    // After successful authentication:
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userType', 'teachers');
+
+    // Navigate to the TeacherHomePage after login
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const TeacherHomePage(),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +62,7 @@ class _LoginScreenState extends State<TeacherLoginScreen> {
                   end: Alignment.centerRight,
                 ).createShader(bounds),
                 child: const Text(
-                  "LearningPark Education Teacher Login",
+                  "Teacher Login",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -150,7 +164,7 @@ class _LoginScreenState extends State<TeacherLoginScreen> {
                                   margin: EdgeInsets.all(5),
                                 ),
                               );
-                              return;
+                              return; // Return early if credentials are not provided
                             }
 
                             try {
@@ -177,8 +191,17 @@ class _LoginScreenState extends State<TeacherLoginScreen> {
                                 password: password,
                               );
 
-                              // If the sign-in is successful, navigate to the homepage
-                              Navigator.of(context).push(
+                              // Save login state using SharedPreferences
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setBool('isLoggedIn', true);
+                              await prefs.setString('userEmail', email);
+
+                              // Since this is the TeacherLoginScreen, you can directly set the user type
+                              await prefs.setString('userType', 'teachers');
+
+                              // Navigate to the Teacher Home Page
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                   builder: (BuildContext context) =>
                                       const TeacherHomePage(),
@@ -186,13 +209,12 @@ class _LoginScreenState extends State<TeacherLoginScreen> {
                               );
                             } on FirebaseAuthException catch (e) {
                               String errorMessage;
-                              if (e.code == 'not-teacher') {
-                                errorMessage =
-                                    'This email is not authorized as a teacher.';
+                              if (e.code == 'user-not-found') {
+                                errorMessage = 'No user found for that email.';
                               } else if (e.code == 'wrong-password') {
                                 errorMessage =
-                                    'Wrong password provided for that teacher.';
-                              } else if (e.code == 'teacher-disabled') {
+                                    'Wrong password provided for that user.';
+                              } else if (e.code == 'user-disabled') {
                                 errorMessage =
                                     'Your account has been deleted or disabled.';
                               } else {
@@ -235,47 +257,10 @@ class _LoginScreenState extends State<TeacherLoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 23),
                 ],
               ),
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChoiceButton({
-    required BuildContext context,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 47.0),
-      child: Container(
-        height: 50,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 33, 150, 243),
-              Color.fromARGB(255, 3, 169, 244),
-            ],
-          ),
-        ),
-        child: Center(
-          child: TextButton(
-            onPressed: onPressed,
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 21,
-              ),
-            ),
-          ),
         ),
       ),
     );
