@@ -11,11 +11,13 @@ class StudentSubjectList extends StatelessWidget {
     'Management',
   ];
 
+  StudentSubjectList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Subject List'),
+        title: const Text('Subject List'),
       ),
       body: ListView.builder(
         itemCount: subjects.length,
