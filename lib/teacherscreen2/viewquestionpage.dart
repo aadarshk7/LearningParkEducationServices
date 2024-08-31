@@ -7,14 +7,15 @@ class ViewQuestionsPage extends StatefulWidget {
   final String subjectName;
   final DatabaseReference questionsRef;
 
-  ViewQuestionsPage({required this.subjectName, required this.questionsRef});
+  const ViewQuestionsPage(
+      {super.key, required this.subjectName, required this.questionsRef});
 
   @override
   _ViewQuestionsPageState createState() => _ViewQuestionsPageState();
 }
 
 class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<Question> _filteredQuestions = [];
   List<Question> _questionList = [];
   bool _isLoading = true;
@@ -24,13 +25,16 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
     super.initState();
     widget.questionsRef.onValue.listen((event) {
       if (event.snapshot.value != null) {
-        Map<dynamic, dynamic> questions = event.snapshot.value as Map<dynamic, dynamic>;
+        Map<dynamic, dynamic> questions =
+            event.snapshot.value as Map<dynamic, dynamic>;
         _questionList = questions.entries
-            .map((entry) => Question.fromMap(Map<String, dynamic>.from(entry.value), entry.key))
+            .map((entry) => Question.fromMap(
+                Map<String, dynamic>.from(entry.value), entry.key))
             .where((question) => question != null)
             .toList();
 
-        _questionList.sort((a, b) => a.question?.compareTo(b.question ?? '') ?? 0);
+        _questionList
+            .sort((a, b) => a.question?.compareTo(b.question ?? '') ?? 0);
 
         setState(() {
           _filteredQuestions = _questionList;
@@ -51,7 +55,8 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
       results = _questionList;
     } else {
       results = _questionList
-          .where((q) => (q.question ?? '').toLowerCase().contains(query.toLowerCase()))
+          .where((q) =>
+              (q.question ?? '').toLowerCase().contains(query.toLowerCase()))
           .toList();
     }
     setState(() {
@@ -78,7 +83,7 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
         backgroundColor: Colors.blueAccent,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Padding(
@@ -98,7 +103,9 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                 ),
                 Expanded(
                   child: _filteredQuestions.isEmpty
-                      ? Center(child: Text('No questions found.', style: GoogleFonts.openSans()))
+                      ? Center(
+                          child: Text('No questions found.',
+                              style: GoogleFonts.openSans()))
                       : ListView.builder(
                           itemCount: _filteredQuestions.length,
                           itemBuilder: (context, index) {
@@ -111,10 +118,14 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ...?question.options?.asMap().entries.map((entry) {
+                                  ...?question.options
+                                      ?.asMap()
+                                      .entries
+                                      .map((entry) {
                                     int idx = entry.key + 1;
                                     String option = entry.value;
-                                    return Text('$idx. $option', style: GoogleFonts.openSans());
+                                    return Text('$idx. $option',
+                                        style: GoogleFonts.openSans());
                                   }),
                                   Text(
                                     'Correct Option: ${question.correctOption ?? 'N/A'}',
@@ -126,12 +137,14 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.edit, color: Colors.blue),
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => EditQuestionPage(
+                                          builder: (context) =>
+                                              EditQuestionPage(
                                             subjectName: widget.subjectName,
                                             questionId: question.id,
                                           ),
@@ -140,8 +153,10 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => _deleteQuestion(question.id),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () =>
+                                        _deleteQuestion(question.id),
                                   ),
                                 ],
                               ),
@@ -172,7 +187,8 @@ class Question {
     return Question(
       id: id, // Use the Firebase key as the id
       question: map['question'] as String?,
-      options: map['options'] != null ? List<String>.from(map['options']) : null,
+      options:
+          map['options'] != null ? List<String>.from(map['options']) : null,
       correctOption: map['correctOption'] as String?,
     );
   }
