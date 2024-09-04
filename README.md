@@ -19,16 +19,16 @@ Secure login for students and teachers using Firebase Auth
 
 <table>
      <tr>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_login.jpg" /><br /><center><b>Teacher Login</b></center></td>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_homepage.jpg" /><br /><center><b>Student Homepage</b></center></td>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_subject.jpg" /><br /><center><b>Student Subject</b></center></td>
-            <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_result.jpg" /><br /><center><b>Student Result</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_login.jpg" /><br /><center><b>Teacher Login</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_homepage.jpg" /><br /><center><b>Student Homepage</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_subject.jpg" /><br /><center><b>Student Subject</b></center></td>
+            <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_result.jpg" /><br /><center><b>Student Result</b></center></td>
      </tr>
      <tr>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_marks.jpg" /><br /><center><b>Student Marks</b></center></td>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_sidenavbar.jpg" /><br /><center><b>Teacher SideNavBar</b></center></td>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_teacherlist.jpg" /><br /><center><b>Teacher Lists</b></center></td>
-          <td><img height="455" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_addnewteacher.jpg" /><br /><center><b>Teacher Add new Teacher</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/student_marks.jpg" /><br /><center><b>Student Marks</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_sidenavbar.jpg" /><br /><center><b>Teacher SideNavBar</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_teacherlist.jpg" /><br /><center><b>Teacher Lists</b></center></td>
+          <td><img height="450" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/teacher_addnewteacher.jpg" /><br /><center><b>Teacher Add new Teacher</b></center></td>
      </tr>
 
 </table>
