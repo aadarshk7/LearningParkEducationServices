@@ -13,7 +13,7 @@ Secure login for students and teachers using Firebase Auth
 - Secure login for students and teachers using Firebase Auth
 - Supports quiz management allowing the admin to set up to 100-150 questions per subject, and students can take quizzes with immediate feedback
 - Automatic score calculation and storage in Firebase Realtime Database
-- Displays student scores and allows data fetching for different subjects
+- Displays student scores and allows data fetching for different subjects.
  
  ### 📷 ScreenShots
 
