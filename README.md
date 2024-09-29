@@ -40,7 +40,7 @@ Secure login for students and teachers using Firebase Auth
 - Browse to the directory where you cloned the repo and click OK
 - Let your code editor import the project
 - To install the dependencies run flutter pub get in the terminal.
-- Build the application in your device by clicking 'run' button
+- Build the application in your device by clicking 'run' button.
 
 ## :computer: Tech Stack
 - Flutter
