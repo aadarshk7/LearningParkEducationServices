@@ -38,7 +38,7 @@ Secure login for students and teachers using Firebase Auth
 - Open your code editor (VS Code, Android Studio etc)
 - Click on 'Open an Existing Project'
 - Browse to the directory where you cloned the repo and click OK
-- Let your code editor import the project
+- Let your code editor import the project.
 - To install the dependencies run flutter pub get in the terminal.
 - Build the application in your device by clicking 'run' button.
 
