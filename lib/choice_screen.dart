@@ -5,7 +5,6 @@ import 'package:learningparkeducation/teacherscreen2/teacher_login_screen.dart';
 class ChoicePage extends StatelessWidget {
   const ChoicePage({super.key});
 
-  @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
