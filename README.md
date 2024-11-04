@@ -1,7 +1,7 @@
 # MCQ App 
 MCQ (Multiple Choice Questions) application using Flutter, designed for students to take quizzes on various subjects. <br>
 <b>Technologies Used:</b> Flutter, Dart, Provider, Shared Preferences, Firebase 
-Secure login for students and teachers using Firebase Auth
+Secure login for students and teachers using Firebase Auth.
 <br> 
 <p align="center">
    <img align="center" height="500" src="https://raw.githubusercontent.com/aadarshk7/LearningParkEducationServices/master/assets/screenshots/choicepage.jpg"/>
